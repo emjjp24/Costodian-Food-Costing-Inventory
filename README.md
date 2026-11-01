@@ -95,13 +95,13 @@ Food businesses often compute the cost of a dish on paper and track their stock 
 
 | Layer      | Technology                         |
 |------------|------------------------------------|
-| Frontend   | HTML5, CSS3                        |
-| Backend    | PHP 8.x (procedural or PDO)        |
+| Frontend   | HTML5, CSS3, plain JavaScript      |
+| Backend    | PHP 8.x (procedural, PDO)          |
 | Database   | MySQL / MariaDB                    |
 | Server     | Apache via **XAMPP**               |
 | Admin tool | phpMyAdmin (bundled with XAMPP)    |
 
-> No frameworks are required. Optional: a little vanilla JavaScript for live total computation in forms.
+> No frameworks are required. The frontend and backend are separate folders: the pages use plain JavaScript to send requests to the PHP backend.
 
 ---
 
@@ -177,73 +177,14 @@ Quantities are typed as **text**, not as a number-only field, so users can write
 - Decimal: `0.5`, `.25`, `2.5`
 - Whole number: `1`, `3`
 
-**Parser function** (`includes/functions.php`):
+**How the system handles a typed quantity**
 
-```php
-/**
- * Converts "1/2", "3/4", "1 1/2", "0.5" or "2" into a float.
- * Returns null if the input is invalid or not greater than zero.
- */
-function parse_quantity(string $input): ?float
-{
-    $input = trim($input);
+1. The quantity box is a **text** field, not a number-only field, because number fields do not allow the `/` character.
+2. While the user types, a live preview (`frontend/src/utils/fractions.js`) shows the decimal value, for example `3/4` → `0.75`. The preview is only a convenience.
+3. When the form is sent, the backend converts the text into a decimal number (`backend/src/helpers/quantity.php`). A mixed number is a whole number plus a fraction (`1 1/2` = 1 + 1/2 = 1.5). A fraction with `0` at the bottom, a negative value, zero, or anything that is not a number is rejected.
+4. The decimal number is then converted to the ingredient's base unit (`backend/src/helpers/units.php`), for example 0.5 kg → 500 g.
 
-    if (preg_match('/^(\d+)\s+(\d+)\s*\/\s*(\d+)$/', $input, $m)) {        // mixed: 1 1/2
-        if ((int)$m[3] === 0) return null;
-        $value = (int)$m[1] + ((int)$m[2] / (int)$m[3]);
-    } elseif (preg_match('/^(\d+)\s*\/\s*(\d+)$/', $input, $m)) {          // fraction: 3/4
-        if ((int)$m[2] === 0) return null;
-        $value = (int)$m[1] / (int)$m[2];
-    } elseif (preg_match('/^(\d+(\.\d+)?|\.\d+)$/', $input)) {             // decimal / whole
-        $value = (float)$input;
-    } else {
-        return null;
-    }
-
-    return $value > 0 ? $value : null;
-}
-```
-
-**Using it with unit conversion:**
-
-```php
-$factors = ['kg' => 1000, 'g' => 1, 'L' => 1000, 'ml' => 1, 'pcs' => 1, 'dozen' => 12];
-
-$qty = parse_quantity($_POST['qty']);          // "1/2" → 0.5
-if ($qty === null) {
-    die("Invalid quantity. Use a number or a fraction like 1/2.");
-}
-$qty_base = $qty * $factors[$_POST['unit']];   // 0.5 kg → 500 (g)
-```
-
-**HTML input** (use `type="text"`, since `type="number"` does not allow `/`):
-
-```html
-<input type="text" name="qty" id="qty" placeholder="e.g. 1/2, 3/4, 1 1/2" required>
-<small id="qty-preview"></small>
-```
-
-**Optional live preview** (vanilla JavaScript):
-
-```html
-<script>
-function parseQty(text) {
-  text = text.trim();
-  let m;
-  if ((m = text.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)$/))) return m[3] == 0 ? null : (+m[1]) + (+m[2]) / (+m[3]);
-  if ((m = text.match(/^(\d+)\s*\/\s*(\d+)$/)))         return m[2] == 0 ? null : (+m[1]) / (+m[2]);
-  if (/^(\d+(\.\d+)?|\.\d+)$/.test(text))               return parseFloat(text);
-  return null;
-}
-document.getElementById('qty').addEventListener('input', function () {
-  const v = parseQty(this.value);
-  document.getElementById('qty-preview').textContent =
-    v === null ? (this.value ? 'Invalid quantity' : '') : '= ' + v;
-});
-</script>
-```
-
-> The server-side PHP check is always the one that counts; the JavaScript preview is only a convenience.
+> The check on the server is the one that counts. The preview in the browser can be bypassed, so it is never trusted.
 
 ### Rule 5 — Perishables
 Ingredients can have an **expiry date**. The inventory flags items that are expired or expire within a set number of days (default: 3), so food is used before it spoils.
@@ -252,69 +193,36 @@ Ingredients can have an **expiry date**. The inventory flags items that are expi
 
 ## 🧮 Costing Formulas
 
-**Unit cost (per base unit)**
-```
-unit_cost = price_paid / quantity_bought_in_base_unit
-Example: ₱180 for 1 kg chicken → 180 / 1000 g = ₱0.18 per g
-```
-
-**Ingredient cost in a recipe**
-```
-ingredient_cost = quantity_used × unit_cost
-Example: 1000 g chicken × ₱0.18 = ₱180.00
-```
-
-**Total recipe cost**
-```
-total_cost = Σ ingredient_cost + other_costs (packaging, labor, gas)
-```
-
-**Cost per serving**
-```
-cost_per_serving = total_cost / number_of_servings
-```
-
-**Suggested selling price (from target food cost %)**
-```
-selling_price = cost_per_serving / (target_food_cost_pct / 100)
-Example: ₱36.55 / 0.35 = ₱104.43
-```
-
-**Food cost % (for any selling price)**
-```
-food_cost_pct = (cost_per_serving / selling_price) × 100
-```
-
-**Gross profit per serving**
-```
-gross_profit = selling_price − cost_per_serving
-```
-
-**Weighted average cost on restock**
-```
-new_unit_cost = ((current_stock × current_unit_cost) + (added_qty × new_unit_cost))
-                / (current_stock + added_qty)
-```
+| Quantity | Formula | Example |
+|----------|---------|---------|
+| Unit cost (per base unit) | price paid ÷ quantity bought (in the base unit) | ₱180 for 1 kg of chicken → 180 ÷ 1000 g = ₱0.18 per g |
+| Ingredient cost in a recipe | quantity used × unit cost | 1000 g × ₱0.18 = ₱180.00 |
+| Total recipe cost | sum of all ingredient costs + other costs (packaging, labor, gas) | ₱199.30 + ₱20.00 = ₱219.30 |
+| Cost per serving | total cost ÷ number of servings | ₱219.30 ÷ 6 = ₱36.55 |
+| Suggested selling price | cost per serving ÷ (target food cost % ÷ 100) | ₱36.55 ÷ 0.35 = ₱104.43 |
+| Food cost % (for any selling price) | (cost per serving ÷ selling price) × 100 | (36.55 ÷ 104.43) × 100 = 35% |
+| Gross profit per serving | selling price − cost per serving | ₱104.43 − ₱36.55 = ₱67.88 |
+| Weighted average cost on restock | ((current stock × current unit cost) + (added quantity × purchase unit cost)) ÷ (current stock + added quantity) | Used to update the unit cost whenever stock is added |
 
 ---
 
 ## 🗂 System Modules / Pages
 
-| Page | File | Description |
-|------|------|-------------|
-| Login | `login.php` | User authentication |
-| Dashboard | `dashboard.php` | Summary cards and recent activity |
-| Recipes list | `costing/index.php` | All recipes/dishes with total cost |
-| Add / edit recipe | `costing/recipe_form.php` | Recipe details and ingredient rows |
-| Recipe details | `costing/view.php` | Cost breakdown, food cost %, selling price, **Cook Batch** |
-| Inventory list | `inventory/index.php` | Stock, unit cost, value, low-stock and expiry flags |
-| Use stock | `inventory/use.php` | Deduct ingredient quantity |
-| Restock | `inventory/restock.php` | Add purchased quantity |
-| Waste / spoilage | `inventory/waste.php` | Record discarded stock |
-| Movement log | `inventory/movements.php` | History of all stock changes |
-| Categories | `categories/index.php` | Manage ingredient and recipe categories |
-| Users (admin) | `users/index.php` | Manage staff accounts |
-| Logout | `logout.php` | End session |
+| Page | Frontend page (`frontend/src/pages/`) | Backend controller (`backend/src/controllers/`) | Description |
+|------|---------------------------------------|--------------------------------------------------|-------------|
+| Login | `frontend/index.html` | `auth.php` | User authentication |
+| Dashboard | `dashboard.html` | `dashboard.php` | Summary cards and recent activity |
+| Recipes list | `recipes.html` | `recipes.php` | All recipes/dishes with total cost |
+| Add / edit recipe | `recipe-form.html` | `recipes.php` | Recipe details and ingredient rows |
+| Recipe details | `recipe-view.html` | `recipes.php`, `stock.php` | Cost breakdown, food cost %, selling price, **Cook Batch** |
+| Inventory list | `inventory.html` | `inventory.php` | Stock, unit cost, value, low-stock and expiry flags |
+| Use stock | `use-stock.html` | `stock.php` | Deduct ingredient quantity |
+| Restock | `restock.html` | `stock.php` | Add purchased quantity |
+| Waste / spoilage | `waste.html` | `stock.php` | Record discarded stock |
+| Movement log | `movements.html` | `stock.php` | History of all stock changes |
+| Categories | `categories.html` | `categories.php` | Manage ingredient and recipe categories |
+| Users (admin) | `users.html` | `users.php` | Manage staff accounts |
+| Logout | Logout button in the navigation bar | `auth.php` | End session |
 
 ---
 
@@ -332,102 +240,11 @@ categories ──► ingredients ◄── recipe_ingredients ──► recipes 
                    └────── stock_movements
 ```
 
-### SQL Script
+### Starter Data
 
-```sql
-CREATE DATABASE IF NOT EXISTS foodcost_db;
-USE foodcost_db;
-
--- USERS
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    full_name VARCHAR(100) NOT NULL,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,              -- password_hash()
-    role ENUM('admin','staff') DEFAULT 'staff',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- CATEGORIES (used for both ingredients and recipes)
-CREATE TABLE categories (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(80) NOT NULL,
-    type ENUM('ingredient','recipe') NOT NULL,
-    UNIQUE KEY uniq_cat (name, type)
-);
-
--- INGREDIENTS (this IS the inventory)
-CREATE TABLE ingredients (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    category_id INT DEFAULT NULL,
-    base_unit ENUM('g','ml','pcs') NOT NULL,
-    stock_qty DECIMAL(12,3) NOT NULL DEFAULT 0,  -- in base unit
-    unit_cost DECIMAL(12,5) NOT NULL DEFAULT 0,  -- cost per base unit
-    reorder_level DECIMAL(12,3) NOT NULL DEFAULT 0,
-    expiry_date DATE DEFAULT NULL,               -- optional, for perishables
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
-);
-
--- RECIPES / DISHES
-CREATE TABLE recipes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    category_id INT DEFAULT NULL,
-    servings INT NOT NULL DEFAULT 1,
-    other_costs DECIMAL(12,2) NOT NULL DEFAULT 0,        -- packaging, labor, gas per batch
-    target_food_cost_pct DECIMAL(5,2) NOT NULL DEFAULT 35.00,
-    notes TEXT,
-    created_by INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
-    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
-);
-
--- INGREDIENTS USED IN EACH RECIPE
-CREATE TABLE recipe_ingredients (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    recipe_id INT NOT NULL,
-    ingredient_id INT NOT NULL,
-    qty_needed DECIMAL(12,3) NOT NULL,           -- in base unit
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
-    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE RESTRICT
-);
-
--- STOCK MOVEMENT LOG
-CREATE TABLE stock_movements (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    ingredient_id INT NOT NULL,
-    type ENUM('stock_in','stock_out','waste','adjustment') NOT NULL,
-    qty DECIMAL(12,3) NOT NULL,                  -- in base unit
-    unit_cost DECIMAL(12,5) DEFAULT NULL,
-    reference VARCHAR(150),                      -- e.g. "Costing: Chicken Adobo"
-    user_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
-);
-```
-
-### Sample Data
-
-```sql
--- Starter categories
-INSERT INTO categories (name, type) VALUES
-('Meat & Poultry','ingredient'), ('Seafood','ingredient'), ('Vegetables & Fruits','ingredient'),
-('Dairy & Eggs','ingredient'), ('Dry Goods & Grains','ingredient'), ('Condiments & Sauces','ingredient'),
-('Oils & Fats','ingredient'), ('Beverages','ingredient'), ('Packaging','ingredient'),
-('Main Dish','recipe'), ('Appetizer','recipe'), ('Dessert','recipe'),
-('Baked Goods','recipe'), ('Drinks','recipe'), ('Sauces & Sides','recipe');
-
--- Admin account (generate your own password hash)
-INSERT INTO users (full_name, username, password, role)
-VALUES ('Administrator', 'admin',
-        '$2y$10$REPLACE_WITH_YOUR_OWN_PASSWORD_HASH', 'admin');
-```
-
-> Generate a real hash with a one-time script: `echo password_hash('admin123', PASSWORD_DEFAULT);`
+- **Ingredient categories:** Meat & Poultry, Seafood, Vegetables & Fruits, Dairy & Eggs, Dry Goods & Grains, Condiments & Sauces, Oils & Fats, Beverages, Packaging.
+- **Recipe categories:** Main Dish, Appetizer, Dessert, Baked Goods, Drinks, Sauces & Sides.
+- **Administrator account:** one starter account with the username `admin`. Its password is stored as a hash, and it should be changed after the first login.
 
 ---
 
@@ -519,6 +336,8 @@ foodcost/
 `-- README.md
 ```
 
+---
+
 ## ⚙️ Installation (XAMPP)
 
 ### Requirements
@@ -531,33 +350,22 @@ foodcost/
    Open the XAMPP Control Panel and start **Apache** and **MySQL**.
 
 2. **Copy the project**
-   Place the `foodcost` folder inside:
-   ```
-   C:\xampp\htdocs\foodcost
-   ```
+   Place the `foodcost` folder inside the XAMPP web folder (`C:\xampp\htdocs\`), so that the project is at `C:\xampp\htdocs\foodcost`.
 
 3. **Create the database**
    - Open `http://localhost/phpmyadmin`
-   - Click **Import**, choose `database.sql`, then click **Go**
+   - Click **Import**, choose `backend/database/database.sql`, then click **Go**
    (or paste the SQL script in the **SQL** tab).
 
-4. **Configure the connection** in `config/db.php`:
-   ```php
-   <?php
-   $host = "localhost";
-   $user = "root";
-   $pass = "";            // default XAMPP password is empty
-   $db   = "foodcost_db";
-
-   $conn = new mysqli($host, $user, $pass, $db);
-   if ($conn->connect_error) {
-       die("Connection failed: " . $conn->connect_error);
-   }
-   $conn->set_charset("utf8mb4");
-   ```
+4. **Check the connection settings** in `backend/src/config/database.php`
+   The system connects to MySQL using PDO. Make sure the settings match your XAMPP:
+   - Server: `localhost`
+   - Username: `root`
+   - Password: empty (the XAMPP default)
+   - Database name: `foodcost_db`
 
 5. **Run the system**
-   Open `http://localhost/foodcost/login.php` and log in.
+   Open `http://localhost/foodcost/frontend/index.html` and log in.
 
 ---
 
@@ -635,43 +443,22 @@ Costing *Banana Bread* with flour, sugar, eggs, and bananas works exactly the sa
 ## 🔒 Security Practices
 
 - Use `password_hash()` and `password_verify()` for passwords.
-- Use **prepared statements** (`mysqli_prepare` or PDO) to prevent SQL injection.
+- Use **PDO prepared statements** with named placeholders (`:name`) to prevent SQL injection.
 - Escape output with `htmlspecialchars()` to prevent XSS.
 - Start sessions securely and check the user role on every protected page.
-- Validate quantities on the server with `parse_quantity()`: accept only fractions, mixed numbers, or decimals greater than 0, and reject division by zero.
+- Validate quantities on the server with the quantity parser: accept only fractions, mixed numbers, or decimals greater than 0, and reject division by zero.
 - Use database **transactions** when saving a recipe or cooking a batch, so stock is never half-deducted.
 
-Example of safe stock deduction:
+### How a safe stock deduction works
 
-```php
-$conn->begin_transaction();
-try {
-    $stmt = $conn->prepare("SELECT stock_qty FROM ingredients WHERE id = ? FOR UPDATE");
-    $stmt->bind_param("i", $ingredient_id);
-    $stmt->execute();
-    $stock = $stmt->get_result()->fetch_assoc()['stock_qty'];
+Handled in `backend/src/services/stock.php`:
 
-    if ($stock < $qty_base) {
-        throw new Exception("Not enough stock.");
-    }
-
-    $upd = $conn->prepare("UPDATE ingredients SET stock_qty = stock_qty - ? WHERE id = ?");
-    $upd->bind_param("di", $qty_base, $ingredient_id);
-    $upd->execute();
-
-    $log = $conn->prepare(
-        "INSERT INTO stock_movements (ingredient_id, type, qty, reference, user_id)
-         VALUES (?, 'stock_out', ?, ?, ?)"
-    );
-    $log->bind_param("idsi", $ingredient_id, $qty_base, $reference, $user_id);
-    $log->execute();
-
-    $conn->commit();
-} catch (Exception $e) {
-    $conn->rollback();
-    echo $e->getMessage();
-}
-```
+1. Start a database transaction.
+2. Lock the ingredient's row and read its current stock.
+3. If the stock is less than the quantity to use, stop and show "Not enough stock."
+4. Subtract the quantity from the stock.
+5. Write a `stock_out` entry in the stock movement history.
+6. Save both changes together. If anything fails along the way, undo everything (roll back), so the stock is never half-deducted.
 
 ---
 
