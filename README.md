@@ -435,42 +435,89 @@ VALUES ('Administrator', 'admin',
 
 ```
 foodcost/
-├── assets/
-│   ├── css/
-│   │   └── style.css
-│   └── img/
-├── config/
-│   └── db.php                 # database connection
-├── includes/
-│   ├── header.php             # navbar with Costing / Inventory tabs
-│   ├── footer.php
-│   ├── auth.php               # session and role check
-│   └── functions.php          # fraction parser, unit conversion, add/deduct stock helpers
-├── costing/
-│   ├── index.php
-│   ├── recipe_form.php
-│   ├── view.php
-│   ├── save.php               # saves recipe + auto-loads to inventory
-│   ├── cook_batch.php         # deducts all recipe ingredients
-│   └── delete.php
-├── inventory/
-│   ├── index.php
-│   ├── use.php
-│   ├── restock.php
-│   ├── waste.php
-│   └── movements.php
-├── categories/
-│   └── index.php
-├── users/
-│   └── index.php
-├── dashboard.php
-├── login.php
-├── logout.php
-├── database.sql               # the SQL script above
-└── README.md
+|-- frontend/
+|   |-- index.html                  # entry page: login
+|   `-- src/
+|       |-- api/                    # calls to the backend
+|       |   |-- client.js           # shared request helper
+|       |   |-- auth.js
+|       |   |-- recipes.js
+|       |   |-- inventory.js
+|       |   |-- stock.js
+|       |   |-- categories.js
+|       |   `-- users.js
+|       |-- assets/
+|       |   |-- css/
+|       |   |   `-- style.css
+|       |   `-- img/
+|       |-- components/             # reusable parts of a page
+|       |   |-- navbar.js           # Costing and Inventory tabs
+|       |   |-- footer.js
+|       |   `-- alert.js
+|       |-- pages/                  # one page for each screen
+|       |   |-- dashboard.html
+|       |   |-- recipes.html
+|       |   |-- recipe-form.html
+|       |   |-- recipe-view.html
+|       |   |-- inventory.html
+|       |   |-- use-stock.html
+|       |   |-- restock.html
+|       |   |-- waste.html
+|       |   |-- movements.html
+|       |   |-- categories.html
+|       |   `-- users.html
+|       |-- utils/
+|       |   |-- format.js           # peso and date formatting
+|       |   `-- fractions.js        # live preview of 1/2, 3/4, 1 1/2
+|       |-- validators/             # form checks before sending
+|       |   |-- login.js
+|       |   |-- recipe.js
+|       |   `-- quantity.js
+|       `-- main.js                 # shared startup script
+|-- backend/
+|   |-- index.php                   # single entry point
+|   |-- database/
+|   |   `-- database.sql            # tables and starter data (Sections 9.3 and 9.4)
+|   `-- src/
+|       |-- config/
+|       |   `-- database.php        # database connection
+|       |-- controllers/            # receive a request and send back the result
+|       |   |-- auth.php
+|       |   |-- dashboard.php
+|       |   |-- recipes.php
+|       |   |-- inventory.php
+|       |   |-- stock.php
+|       |   |-- categories.php
+|       |   `-- users.php
+|       |-- helpers/
+|       |   |-- quantity.php        # fraction, mixed number and decimal parser
+|       |   |-- units.php           # unit conversion to the base unit
+|       |   `-- response.php        # standard replies to the frontend
+|       |-- middlewares/
+|       |   |-- session.php         # checks that the user is logged in
+|       |   `-- role.php            # checks that the user may do the action
+|       |-- models/                 # database queries, one file for each table
+|       |   |-- user.php
+|       |   |-- category.php
+|       |   |-- ingredient.php
+|       |   |-- recipe.php
+|       |   |-- recipeingredient.php
+|       |   `-- stockmovement.php
+|       |-- routes/
+|       |   `-- api.php             # connects each request to its controller
+|       |-- services/               # the main system logic
+|       |   |-- costing.php         # cost, cost per serving and selling price
+|       |   |-- inventory.php       # automatic loading of costed ingredients
+|       |   `-- stock.php           # use, cook batch, restock and waste
+|       `-- validators/             # input checks on the server
+|           |-- auth.php
+|           |-- user.php
+|           |-- recipe.php
+|           |-- ingredient.php
+|           `-- stock.php
+|-- .gitignore
+`-- README.md
 ```
-
----
 
 ## ⚙️ Installation (XAMPP)
 
