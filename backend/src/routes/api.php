@@ -14,6 +14,7 @@ $routes = [
 
     // ---- login and account ----
     // login: username, password
+    'auth/register' => ['POST', 'register.php', 'authRegister', 'public'],
     'auth/login' => ['POST', 'auth.php', 'authLogin', 'public'],
     'auth/logout' => ['POST', 'auth.php', 'authLogout', 'public'],
     // who is logged in (the frontend calls this when a page opens)
