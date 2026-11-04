@@ -1,0 +1,40 @@
+/* colors for light and dark mode: change the colors of the whole site here */
+
+:root,
+:root[data-theme="light"]{
+    --bg: #fcebd5;
+    --card: #ffffff;
+    --text: #1f2329;
+    --muted: #6d7380;
+    --line: #e4ddd3;
+    --input-bg: #ffffff;
+    --accent-1: #f1877c;
+    --accent-2: #f6b274;
+    --accent-text: #c4574b;
+    --ring: rgba(241, 135, 124, 0.35);
+    --shadow: 0 18px 50px rgba(150, 100, 50, 0.18);
+    --soft: #fff4ea;
+    --error-bg: #fdecec;
+    --error-text: #9b1c1c;
+    --ok-bg: #e7f6ec;
+    --ok-text: #1b6b3a;
+}
+
+:root[data-theme="dark"]{
+    --bg: #1C1C1D;          /* page background */
+    --card: #39393B;        /* cards, top panel, light sections */
+    --text: #f2f2f3;
+    --muted: #a1a1a6;
+    --line: #505053;
+    --input-bg: #1C1C1D;    /* inputs use the darker color */
+    --accent-1: #f1877c;
+    --accent-2: #f6b274;
+    --accent-text: #f6b274;
+    --ring: rgba(246, 178, 116, 0.35);
+    --shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+    --soft: #454548;
+    --error-bg: #4a2a2e;
+    --error-text: #ffb4b4;
+    --ok-bg: #1f3d2c;
+    --ok-text: #a6e3bd;
+}

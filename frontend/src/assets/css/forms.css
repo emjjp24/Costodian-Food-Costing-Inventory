@@ -1,0 +1,161 @@
+/* ---------- forms ---------- */
+
+label{
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.field{
+    margin-bottom: 14px;
+}
+
+input[type="text"],
+input[type="password"]{
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    font-family: inherit;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--text);
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus{
+    outline: 3px solid var(--ring);
+    border-color: var(--accent-1);
+}
+
+/* password box with the eye button inside */
+.password-wrap{
+    position: relative;
+}
+
+.password-wrap input{
+    padding-right: 42px;
+}
+
+.eye{
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.eye:hover{
+    color: var(--text);
+}
+
+.eye svg{
+    width: 18px;
+    height: 18px;
+}
+
+.eye .icon-hide{
+    display: none;
+}
+
+.eye.shown .icon-show{
+    display: none;
+}
+
+.eye.shown .icon-hide{
+    display: block;
+}
+
+.hint{
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* ---------- personal or business choice ---------- */
+
+.type-choice{
+    border: 0;
+    padding: 0;
+    margin: 0 0 16px;
+}
+
+.type-choice legend{
+    font-size: 13px;
+    font-weight: 600;
+    padding: 0;
+    margin-bottom: 8px;
+}
+
+.type-options{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.type-option{
+    margin: 0;
+    font-weight: 400;
+    cursor: pointer;
+    position: relative;
+}
+
+.type-option input{
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.type-box{
+    display: block;
+    height: 100%;
+    padding: 12px;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    background: var(--input-bg);
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.type-box strong{
+    display: block;
+    font-size: 14px;
+}
+
+.type-box small{
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.type-option:hover .type-box{
+    border-color: var(--accent-2);
+}
+
+.type-option input:checked + .type-box{
+    border-color: var(--accent-1);
+    background: var(--soft);
+}
+
+.type-option input:focus-visible + .type-box{
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+}
+
+@media (max-width: 420px){
+    .type-options{
+        grid-template-columns: 1fr;
+    }
+}

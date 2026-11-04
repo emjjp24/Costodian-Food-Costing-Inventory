@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in | Costodian</title>
+    <script src="src/assets/js/theme.js"></script>
+    <link rel="stylesheet" href="src/assets/css/variables.css">
+    <link rel="stylesheet" href="src/assets/css/base.css">
+    <link rel="stylesheet" href="src/assets/css/layout.css">
+    <link rel="stylesheet" href="src/assets/css/header.css">
+    <link rel="stylesheet" href="src/assets/css/forms.css">
+    <link rel="stylesheet" href="src/assets/css/components.css">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" href="landing.html">
+        <!-- PUT YOUR LOGO PHOTO HERE: save it as logo.png in frontend/src/assets/images/ -->
+        <img class="brand-logo" src="src/assets/images/logo.png" alt="Costodian logo" width="36" height="36">
+        <span class="brand-name">Costodian</span>
+    </a>
+</header>
+    <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <div class="auth-page">
+        <main class="auth-card">
+            <a class="logo">
+                <img src="src/assets/images/account.png" alt="Costodian logo">
+            </a>
+            <h1>Sign in</h1>
+            <p class="tagline">Welcome back to Costodian</p>
+
+            <div id="message" class="alert" role="alert" hidden></div>
+
+            <form id="login-form" novalidate>
+                <div class="field">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" maxlength="50" autocomplete="username">
+                </div>
+
+                <div class="field">
+                    <label for="password">Password</label>
+                    <div class="password-wrap">
+                        <input type="password" id="password" name="password" maxlength="72" autocomplete="current-password">
+                        <button type="button" class="eye" data-for="password" aria-label="Show password">
+                            <svg class="icon-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <svg class="icon-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.9 17.9A10.9 10.9 0 0 1 12 19C5 19 1 12 1 12a18.5 18.5 0 0 1 5.1-5.9M9.9 5.2A10.4 10.4 0 0 1 12 5c7 0 11 7 11 7a18.6 18.6 0 0 1-2.2 3.2M1 1l22 22"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn-primary">Sign in</button>
+            </form>
+
+            <div class="links">
+                <a href="#" id="forgot">Forgot password?</a>
+                <p>New here? <a href="src/pages/signup.html">Create a free account</a></p>
+            </div>
+        </main>
+    </div>
+
+    <script src="src/api/client.js"></script>
+    <script src="src/api/auth.js"></script>
+    <script src="src/validators/login.js"></script>
+    <script>
+        // where to go after a successful login (put dashboard.html here when that page exists)
+        // while it is empty, the page just shows a welcome message
+        var AFTER_LOGIN_PAGE = "";
+
+        var form = document.getElementById('login-form');
+        var message = document.getElementById('message');
+        var submitBtn = document.getElementById('submit-btn');
+
+        // show a message in the alert box (textContent keeps typed characters from running as HTML)
+        function showMessage(text, ok){
+            message.textContent = text;
+            message.className = ok ? 'alert alert-ok' : 'alert alert-error';
+            message.hidden = false;
+        }
+
+        // the eye buttons show or hide the password next to them
+        document.querySelectorAll('.eye').forEach(function(button){
+            button.addEventListener('click', function(){
+                var box = document.getElementById(button.getAttribute('data-for'));
+                var show = (box.type == 'password');
+                box.type = show ? 'text' : 'password';
+                button.classList.toggle('shown', show);
+                button.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+            });
+        });
+
+        // there is no email reset in this system, an administrator changes the password
+        document.getElementById('forgot').addEventListener('click', function(event){
+            event.preventDefault();
+            showMessage('Please ask an administrator to reset your password.', false);
+        });
+
+        form.addEventListener('submit', function(event){
+            event.preventDefault();
+
+            var values = {
+                username: form.elements['username'].value.trim(),
+                password: form.elements['password'].value
+            };
+
+            var error = validateLoginForm(values);
+            if(error != ""){
+                showMessage(error, false);
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing in...';
+
+            loginUser(values).then(function(reply){
+                if(reply.success){
+                    showMessage(reply.message, true);
+                    if(AFTER_LOGIN_PAGE != ""){
+                        window.location.href = AFTER_LOGIN_PAGE;
+                        return;
+                    }
+                    form.reset();
+                } else {
+                    showMessage(reply.message, false);
+                }
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign in';
+            });
+        });
+    </script>
+</body>
+</html>
