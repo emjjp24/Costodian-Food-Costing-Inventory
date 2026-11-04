@@ -1,0 +1,75 @@
+/* ---------- buttons, links, messages ---------- */
+
+button{
+    font-family: inherit;
+}
+
+.btn-primary{
+    width: 100%;
+    padding: 11px;
+    margin-top: 4px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(241, 135, 124, 0.35);
+}
+
+.btn-primary:hover{
+    filter: brightness(1.05);
+}
+
+.btn-primary:focus-visible{
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+}
+
+.btn-primary:disabled{
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.alert{
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.alert[hidden]{
+    display: none;
+}
+
+.alert-error{
+    background: var(--error-bg);
+    color: var(--error-text);
+}
+
+.alert-ok{
+    background: var(--ok-bg);
+    color: var(--ok-text);
+}
+
+.links{
+    margin: 16px 0 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.links a{
+    color: var(--accent-text);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.links a:hover{
+    text-decoration: underline;
+}
+
+.links p{
+    margin: 6px 0 0;
+}

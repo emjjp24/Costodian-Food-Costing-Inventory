@@ -1,0 +1,64 @@
+/* ---------- page and card ---------- */
+
+.auth-page{
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 110px 16px 44px;
+}
+
+.auth-card{
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    background: var(--card);
+    border-radius: 14px;
+    padding: 0 28px 26px;
+    box-shadow: var(--shadow);
+    transition: background 0.25s;
+}
+
+.auth-card.wide{
+    max-width: 460px;
+}
+
+/* the round logo that sits on the top edge of the card */
+.logo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    margin: -27px auto 10px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    box-shadow: 0 6px 16px rgba(241, 135, 124, 0.4);
+}
+
+.logo img{
+    display: block;
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+}
+
+.auth-card h1{
+    margin: 0 0 4px;
+    text-align: center;
+    font-size: 22px;
+}
+
+.auth-card .tagline{
+    margin: 0 0 18px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+@media (max-width: 420px){
+    .auth-card{
+        padding: 0 18px 22px;
+    }
+}
