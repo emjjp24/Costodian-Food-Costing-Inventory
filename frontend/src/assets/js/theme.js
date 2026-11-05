@@ -4,7 +4,7 @@
 (function(){
     var saved = null;
     try{
-        saved = localStorage.getItem('foodcost-theme');
+        saved = localStorage.getItem('costodian-theme');
     } catch(e){
         saved = null;
     }
@@ -31,7 +31,7 @@
             var next = (now == 'dark') ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', next);
             try{
-                localStorage.setItem('foodcost-theme', next);
+                localStorage.setItem('costodian-theme', next);
             } catch(e){
                 // private mode: it still works, it just is not remembered
             }

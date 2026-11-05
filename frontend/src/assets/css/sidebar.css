@@ -1,0 +1,224 @@
+/* the panel on the left: logo, page buttons and the settings button */
+
+.sidebar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 30;
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+    padding: 0 14px 18px;
+    background: var(--card);
+    border-right: 1px solid var(--line);
+    transition: transform 0.25s, background 0.25s, visibility 0s;
+}
+
+/* the top row of the panel: it is as tall as the top bar, so their bottom lines meet */
+.side-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    margin: 0 -14px 14px;
+    padding: 0 12px 0 22px;
+    border-bottom: 1px solid var(--line);
+}
+
+.side-brand{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+    text-decoration: none;
+}
+
+/* the button that closes the panel */
+.side-close{
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.side-close svg{
+    width: 20px;
+    height: 20px;
+}
+
+.side-close:hover{
+    background: var(--soft);
+    color: var(--text);
+}
+
+.side-close:focus-visible{
+    outline: 3px solid var(--ring);
+    outline-offset: 1px;
+}
+
+.side-brand img{
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.side-brand span{
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.side-nav{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.side-link{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.side-link[hidden]{
+    display: none;
+}
+
+.side-link svg{
+    width: 20px;
+    height: 20px;
+    flex: none;
+}
+
+.side-link:hover{
+    background: var(--soft);
+    color: var(--text);
+}
+
+.side-link[aria-current="page"]{
+    background: var(--soft);
+    color: var(--accent-text);
+}
+
+.side-link:focus-visible,
+.menu-item:focus-visible{
+    outline: 3px solid var(--ring);
+    outline-offset: 1px;
+}
+
+/* the settings button sits at the bottom of the panel */
+.side-bottom{
+    position: relative;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+}
+
+.settings-menu{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(100% - 4px);
+    display: none;
+    padding: 6px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+}
+
+.settings-menu.open{
+    display: block;
+}
+
+.menu-item{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.menu-item:hover{
+    background: var(--soft);
+}
+
+.menu-item svg{
+    width: 18px;
+    height: 18px;
+    flex: none;
+}
+
+/* light mode shows "Dark mode" with a moon, dark mode shows "Light mode" with a sun */
+:root[data-theme="dark"] .icon-moon,
+:root[data-theme="dark"] .label-dark,
+:root:not([data-theme="dark"]) .icon-sun,
+:root:not([data-theme="dark"]) .label-light{
+    display: none;
+}
+
+/* the dark layer behind the panel on a phone */
+.scrim{
+    position: fixed;
+    inset: 0;
+    z-index: 25;
+    display: none;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.scrim.open{
+    display: block;
+}
+
+/* on a computer the panel can be closed: it slides out and the page uses the whole width */
+@media (min-width: 861px){
+    .sidebar-collapsed .sidebar{
+        transform: translateX(-100%);
+        visibility: hidden;
+        transition: transform 0.25s, background 0.25s, visibility 0s 0.25s;
+    }
+}
+
+/* on a phone the panel slides in over the page */
+@media (max-width: 860px){
+    .sidebar{
+        transform: translateX(-100%);
+        visibility: hidden;
+        box-shadow: none;
+        transition: transform 0.25s, background 0.25s, visibility 0s 0.25s;
+    }
+    .sidebar.open{
+        transform: translateX(0);
+        visibility: visible;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+        transition: transform 0.25s, background 0.25s, visibility 0s;
+    }
+}
