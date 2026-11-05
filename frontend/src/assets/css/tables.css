@@ -1,0 +1,113 @@
+/* the "Recent Stock Changes List" card, its table and the colored status tags */
+
+.panel{
+    padding: 22px 24px;
+    border-radius: 16px;
+    background: var(--card);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.07);
+}
+
+.panel h2{
+    margin: 0 0 14px;
+    font-size: 18px;
+}
+
+.table-wrap{
+    overflow-x: auto;
+}
+
+.table{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.table th{
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.table td{
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+}
+
+.table tbody tr:last-child td{
+    border-bottom: 0;
+}
+
+.table .item strong{
+    display: block;
+    font-weight: 600;
+}
+
+.table .item small{
+    color: var(--muted);
+}
+
+.table .when{
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.table .empty{
+    padding: 28px 10px;
+    text-align: center;
+    color: var(--muted);
+}
+
+/* status tags */
+.tag{
+    display: inline-block;
+    min-width: 82px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.tag-add{
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    color: #3b1d14;
+}
+
+.tag-out{
+    border: 1.5px solid var(--accent-1);
+    color: var(--accent-text);
+}
+
+.tag-waste{
+    background: var(--error-bg);
+    color: var(--error-text);
+}
+
+.tag-adjust{
+    background: var(--soft);
+    color: var(--muted);
+}
+
+@media (max-width: 700px){
+    .panel{
+        padding: 16px 14px;
+    }
+    .table th,
+    .table td{
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+    .tag{
+        min-width: 0;
+        padding: 3px 9px;
+    }
+    .table .when{
+        white-space: normal;
+    }
+}

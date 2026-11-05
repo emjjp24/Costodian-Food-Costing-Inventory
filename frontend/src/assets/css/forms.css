@@ -154,6 +154,44 @@ input[type="password"]:focus{
     outline-offset: 2px;
 }
 
+/* remember me and forgot password on one row */
+.row-options{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: -2px 0 14px;
+}
+
+.remember{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.remember input{
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--accent-1);
+    cursor: pointer;
+}
+
+.row-options a{
+    color: var(--accent-text);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.row-options a:hover{
+    text-decoration: underline;
+}
+
 @media (max-width: 420px){
     .type-options{
         grid-template-columns: 1fr;

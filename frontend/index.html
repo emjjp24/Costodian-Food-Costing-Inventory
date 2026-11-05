@@ -51,6 +51,14 @@
                     </div>
                 </div>
 
+                <div class="row-options">
+                    <label class="remember">
+                        <input type="checkbox" id="remember" name="remember">
+                        Remember me
+                    </label>
+                    <a href="#" id="forgot">Forgot password?</a>
+                </div>
+
                 <button type="submit" id="submit-btn" class="btn-primary">Sign in</button>
             </form>
 
@@ -61,7 +69,7 @@
         </main>
     </div>
 
-    <script src="src/api/client.js"></script>
+        <script src="src/api/client.js"></script>
     <script src="src/api/auth.js"></script>
     <script src="src/validators/login.js"></script>
     <script>
@@ -91,6 +99,35 @@
             });
         });
 
+        // remember me: only the username is saved in this browser, never the password
+        var REMEMBER_KEY = 'costodian-remembered-username';
+
+        function loadRemembered(){
+            try{
+                var saved = localStorage.getItem(REMEMBER_KEY);
+                if(saved){
+                    form.elements['username'].value = saved;
+                    form.elements['remember'].checked = true;
+                }
+            } catch(e){
+                // private mode: nothing to load
+            }
+        }
+
+        function saveRemembered(username, remember){
+            try{
+                if(remember){
+                    localStorage.setItem(REMEMBER_KEY, username);
+                } else {
+                    localStorage.removeItem(REMEMBER_KEY);
+                }
+            } catch(e){
+                // private mode: it just is not remembered
+            }
+        }
+
+        loadRemembered();
+
         // there is no email reset in this system, an administrator changes the password
         document.getElementById('forgot').addEventListener('click', function(event){
             event.preventDefault();
@@ -116,12 +153,14 @@
 
             loginUser(values).then(function(reply){
                 if(reply.success){
+                    saveRemembered(values.username, form.elements['remember'].checked);
                     showMessage(reply.message, true);
                     if(AFTER_LOGIN_PAGE != ""){
                         window.location.href = AFTER_LOGIN_PAGE;
                         return;
                     }
                     form.reset();
+                    loadRemembered();
                 } else {
                     showMessage(reply.message, false);
                 }
