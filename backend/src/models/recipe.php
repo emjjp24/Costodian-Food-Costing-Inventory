@@ -1,21 +1,23 @@
 <?php
-function findRecipeById($conn, $id){
+// find a recipe, only inside the given account
+function findRecipeById($conn, $id, $account_id){
     $sql = "SELECT r.*, c.name AS category_name
             FROM recipes r
             LEFT JOIN categories c ON c.id = r.category_id
-            WHERE r.id = :id";
+            WHERE r.id = :id AND r.account_id = :account_id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':account_id', $account_id);
     $stmt->execute();
     return $stmt->fetch();
 }
 
-function listRecipes($conn, $search, $category_id){
+function listRecipes($conn, $account_id, $search, $category_id){
     $sql = "SELECT r.*, c.name AS category_name
             FROM recipes r
             LEFT JOIN categories c ON c.id = r.category_id
-            WHERE 1 = 1";
-    $params = [];
+            WHERE r.account_id = :account_id";
+    $params = [':account_id' => $account_id];
 
     if($search != ""){
         $sql .= " AND r.name LIKE :search ESCAPE '!'";
@@ -32,13 +34,25 @@ function listRecipes($conn, $search, $category_id){
     return $stmt->fetchAll();
 }
 
-// ingredient cost of every recipe at today's prices: recipe_id => cost
-function recipeIngredientCosts($conn){
+function countRecipes($conn, $account_id){
+    $sql = "SELECT COUNT(*) AS total FROM recipes WHERE account_id = :account_id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':account_id', $account_id);
+    $stmt->execute();
+    $row = $stmt->fetch();
+    return (int)$row['total'];
+}
+
+// ingredient cost of every recipe of the account at today's prices: recipe_id => cost
+function recipeIngredientCosts($conn, $account_id){
     $sql = "SELECT ri.recipe_id, SUM(ri.qty_needed * i.unit_cost) AS ingredient_cost
             FROM recipe_ingredients ri
+            JOIN recipes r ON r.id = ri.recipe_id
             JOIN ingredients i ON i.id = ri.ingredient_id
+            WHERE r.account_id = :account_id
             GROUP BY ri.recipe_id";
     $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':account_id', $account_id);
     $stmt->execute();
     $costs = [];
     foreach($stmt->fetchAll() as $row){
@@ -47,10 +61,11 @@ function recipeIngredientCosts($conn){
     return $costs;
 }
 
-function insertRecipe($conn, $name, $category_id, $servings, $other_costs, $target_pct, $notes, $user_id){
-    $sql = "INSERT INTO recipes (name, category_id, servings, other_costs, target_food_cost_pct, notes, created_by)
-            VALUES (:name, :category_id, :servings, :other_costs, :target_pct, :notes, :created_by)";
+function insertRecipe($conn, $account_id, $name, $category_id, $servings, $other_costs, $target_pct, $notes, $user_id){
+    $sql = "INSERT INTO recipes (account_id, name, category_id, servings, other_costs, target_food_cost_pct, notes, created_by)
+            VALUES (:account_id, :name, :category_id, :servings, :other_costs, :target_pct, :notes, :created_by)";
     $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':account_id', $account_id);
     $stmt->bindParam(':name', $name);
     $stmt->bindParam(':category_id', $category_id);
     $stmt->bindParam(':servings', $servings);
@@ -62,10 +77,10 @@ function insertRecipe($conn, $name, $category_id, $servings, $other_costs, $targ
     return (int)$conn->lastInsertId();
 }
 
-function updateRecipe($conn, $id, $name, $category_id, $servings, $other_costs, $target_pct, $notes){
+function updateRecipe($conn, $id, $account_id, $name, $category_id, $servings, $other_costs, $target_pct, $notes){
     $sql = "UPDATE recipes SET name = :name, category_id = :category_id, servings = :servings,
                    other_costs = :other_costs, target_food_cost_pct = :target_pct, notes = :notes
-            WHERE id = :id";
+            WHERE id = :id AND account_id = :account_id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':name', $name);
     $stmt->bindParam(':category_id', $category_id);
@@ -74,13 +89,15 @@ function updateRecipe($conn, $id, $name, $category_id, $servings, $other_costs, 
     $stmt->bindParam(':target_pct', $target_pct);
     $stmt->bindParam(':notes', $notes);
     $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':account_id', $account_id);
     $stmt->execute();
 }
 
-function deleteRecipe($conn, $id){
-    $sql = "DELETE FROM recipes WHERE id = :id";
+function deleteRecipe($conn, $id, $account_id){
+    $sql = "DELETE FROM recipes WHERE id = :id AND account_id = :account_id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':account_id', $account_id);
     $stmt->execute();
 }
 ?>

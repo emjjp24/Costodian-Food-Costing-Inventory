@@ -7,7 +7,7 @@ function categoriesList($conn, $user){
     }
 
     $items = [];
-    foreach(listCategories($conn, $type) as $row){
+    foreach(listCategories($conn, (int)$user['account_id'], $type) as $row){
         $items[] = [
             'id' => (int)$row['id'],
             'name' => $row['name'],
@@ -20,6 +20,7 @@ function categoriesList($conn, $user){
 
 function categoriesCreate($conn, $user){
 
+    $account_id = (int)$user['account_id'];
     $name = isset($_POST['name']) ? cleanText($_POST['name']) : "";
     $type = isset($_POST['type']) ? cleanText($_POST['type']) : "";
 
@@ -32,18 +33,19 @@ function categoriesCreate($conn, $user){
     if($type != 'ingredient' && $type != 'recipe'){
         respond(false, 'The type must be ingredient or recipe.', null, 400);
     }
-    if(categoryNameTaken($conn, $name, $type, 0)){
+    if(categoryNameTaken($conn, $account_id, $name, $type, 0)){
         respond(false, 'That category already exists.', null, 400);
     }
 
-    $id = insertCategory($conn, $name, $type);
+    $id = insertCategory($conn, $account_id, $name, $type);
     respond(true, 'Category added.', ['id' => $id, 'name' => $name, 'type' => $type], 201);
 }
 
 function categoriesUpdate($conn, $user){
 
+    $account_id = (int)$user['account_id'];
     $id = requestId(isset($_POST['id']) ? $_POST['id'] : 0);
-    $category = $id > 0 ? findCategory($conn, $id) : false;
+    $category = $id > 0 ? findCategory($conn, $id, $account_id) : false;
     if(!$category){
         respond(false, 'Category not found.', null, 404);
     }
@@ -55,23 +57,24 @@ function categoriesUpdate($conn, $user){
     if(mb_strlen($name) > 80){
         respond(false, 'The name must not be longer than 80 characters.', null, 400);
     }
-    if(categoryNameTaken($conn, $name, $category['type'], $id)){
+    if(categoryNameTaken($conn, $account_id, $name, $category['type'], $id)){
         respond(false, 'That category already exists.', null, 400);
     }
 
-    renameCategory($conn, $id, $name);
+    renameCategory($conn, $id, $account_id, $name);
     respond(true, 'Category updated.');
 }
 
 function categoriesDelete($conn, $user){
 
+    $account_id = (int)$user['account_id'];
     $id = requestId(isset($_POST['id']) ? $_POST['id'] : 0);
-    if($id == 0 || !findCategory($conn, $id)){
+    if($id == 0 || !findCategory($conn, $id, $account_id)){
         respond(false, 'Category not found.', null, 404);
     }
 
     // items in the category are kept and become uncategorized
-    deleteCategory($conn, $id);
+    deleteCategory($conn, $id, $account_id);
     respond(true, 'Category deleted. Items in it are now uncategorized.');
 }
 ?>

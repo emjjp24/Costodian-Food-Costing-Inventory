@@ -15,8 +15,10 @@ function insertMovement($conn, $ingredient_id, $type, $qty, $unit_cost, $referen
 }
 
 // build the filter part shared by the list and the count
+// the account filter is always there, so one account never sees another account's history
 function movementFilter($filters, &$params){
-    $where = " WHERE 1 = 1";
+    $where = " WHERE i.account_id = :account_id";
+    $params[':account_id'] = $filters['account_id'];
     if($filters['ingredient_id'] !== null){
         $where .= " AND m.ingredient_id = :ingredient_id";
         $params[':ingredient_id'] = $filters['ingredient_id'];
@@ -58,7 +60,9 @@ function listMovements($conn, $filters, $limit, $offset){
 
 function countMovements($conn, $filters){
     $params = [];
-    $sql = "SELECT COUNT(*) AS total FROM stock_movements m" . movementFilter($filters, $params);
+    $sql = "SELECT COUNT(*) AS total
+            FROM stock_movements m
+            JOIN ingredients i ON i.id = m.ingredient_id" . movementFilter($filters, $params);
     $stmt = $conn->prepare($sql);
     $stmt->execute($params);
     $row = $stmt->fetch();

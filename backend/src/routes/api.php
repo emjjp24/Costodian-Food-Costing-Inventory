@@ -13,8 +13,11 @@
 $routes = [
 
     // ---- login and account ----
+    // sign up (free): full_name, username, password, confirm_password,
+    //   account_type = personal | business, business_name (needed for business)
+    //   makes a new account with its own empty inventory and logs the person in
+    'auth/register' => ['POST', 'auth.php', 'authRegister', 'public'],
     // login: username, password
-    'auth/register' => ['POST', 'register.php', 'authRegister', 'public'],
     'auth/login' => ['POST', 'auth.php', 'authLogin', 'public'],
     'auth/logout' => ['POST', 'auth.php', 'authLogout', 'public'],
     // who is logged in (the frontend calls this when a page opens)
@@ -73,7 +76,7 @@ $routes = [
     // delete: id
     'categories/delete' => ['POST', 'categories.php', 'categoriesDelete', 'admin'],
 
-    // ---- users (administrator only) ----
+    // ---- users (administrator only, business accounts only for adding staff) ----
     'users/list' => ['GET', 'users.php', 'usersList', 'admin'],
     // create: full_name, username, password, role (admin or staff)
     'users/create' => ['POST', 'users.php', 'usersCreate', 'admin'],

@@ -1,15 +1,16 @@
 <?php
 function recipesList($conn, $user){
 
+    $account_id = (int)$user['account_id'];
     $search = isset($_GET['search']) ? cleanText($_GET['search']) : "";
     $category_id = optionalId(isset($_GET['category_id']) ? $_GET['category_id'] : null);
     if($category_id === false){
         respond(false, 'The category is not valid.', null, 400);
     }
 
-    $costs = recipeIngredientCosts($conn);
+    $costs = recipeIngredientCosts($conn, $account_id);
     $items = [];
-    foreach(listRecipes($conn, $search, $category_id) as $row){
+    foreach(listRecipes($conn, $account_id, $search, $category_id) as $row){
         $ingredient_cost = isset($costs[(int)$row['id']]) ? $costs[(int)$row['id']] : 0;
         $items[] = [
             'id' => (int)$row['id'],
@@ -25,7 +26,7 @@ function recipesList($conn, $user){
 function recipesView($conn, $user){
 
     $id = requestId(isset($_GET['id']) ? $_GET['id'] : 0);
-    $recipe = $id > 0 ? findRecipeById($conn, $id) : false;
+    $recipe = $id > 0 ? findRecipeById($conn, $id, (int)$user['account_id']) : false;
     if(!$recipe){
         respond(false, 'Recipe not found.', null, 404);
     }
@@ -48,7 +49,7 @@ function recipesCreate($conn, $user){
         if($error){
             respond(false, $error, null, 400);
         }
-        $result = saveRecipe($conn, null, $data, $user['id']);
+        $result = saveRecipe($conn, null, $data, $user);
         respond(true, 'Recipe saved. Its ingredients are now in the inventory.', $result, 201);
     }
     respond(false, 'Please enter the recipe name.', null, 400);
@@ -57,7 +58,7 @@ function recipesCreate($conn, $user){
 function recipesUpdate($conn, $user){
 
     $id = requestId(isset($_POST['id']) ? $_POST['id'] : 0);
-    if($id == 0 || !findRecipeById($conn, $id)){
+    if($id == 0 || !findRecipeById($conn, $id, (int)$user['account_id'])){
         respond(false, 'Recipe not found.', null, 404);
     }
 
@@ -65,18 +66,18 @@ function recipesUpdate($conn, $user){
     if($error){
         respond(false, $error, null, 400);
     }
-    $result = saveRecipe($conn, $id, $data, $user['id']);
+    $result = saveRecipe($conn, $id, $data, $user);
     respond(true, 'Recipe updated.', $result);
 }
 
 function recipesDelete($conn, $user){
 
     $id = requestId(isset($_POST['id']) ? $_POST['id'] : 0);
-    if($id == 0 || !findRecipeById($conn, $id)){
+    if($id == 0 || !findRecipeById($conn, $id, (int)$user['account_id'])){
         respond(false, 'Recipe not found.', null, 404);
     }
 
-    deleteRecipe($conn, $id);
+    deleteRecipe($conn, $id, (int)$user['account_id']);
     respond(true, 'Recipe deleted. The inventory was not changed.');
 }
 ?>

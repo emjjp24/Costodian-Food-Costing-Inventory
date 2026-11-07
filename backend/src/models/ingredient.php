@@ -1,42 +1,45 @@
 <?php
-// find an ingredient with its category name
-function findIngredientById($conn, $id){
+// find an ingredient with its category name, only inside the given account
+function findIngredientById($conn, $id, $account_id){
     $sql = "SELECT i.*, c.name AS category_name
             FROM ingredients i
             LEFT JOIN categories c ON c.id = i.category_id
-            WHERE i.id = :id";
+            WHERE i.id = :id AND i.account_id = :account_id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':account_id', $account_id);
     $stmt->execute();
     return $stmt->fetch();
 }
 
 // find and lock an ingredient row, used inside a transaction before changing the stock
-function lockIngredient($conn, $id){
-    $sql = "SELECT * FROM ingredients WHERE id = :id FOR UPDATE";
+function lockIngredient($conn, $id, $account_id){
+    $sql = "SELECT * FROM ingredients WHERE id = :id AND account_id = :account_id FOR UPDATE";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':account_id', $account_id);
     $stmt->execute();
     return $stmt->fetch();
 }
 
 // same as above but by name (the name is not case sensitive)
-function lockIngredientByName($conn, $name){
-    $sql = "SELECT * FROM ingredients WHERE name = :name FOR UPDATE";
+function lockIngredientByName($conn, $name, $account_id){
+    $sql = "SELECT * FROM ingredients WHERE name = :name AND account_id = :account_id FOR UPDATE";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':name', $name);
+    $stmt->bindParam(':account_id', $account_id);
     $stmt->execute();
     return $stmt->fetch();
 }
 
-// the inventory list, every filter is optional
+// the inventory list of one account, every filter is optional
 // status: low, out, expired, expiring or alert (any of them)
-function listIngredients($conn, $search, $category_id, $status, $today, $soon){
+function listIngredients($conn, $account_id, $search, $category_id, $status, $today, $soon){
     $sql = "SELECT i.*, c.name AS category_name
             FROM ingredients i
             LEFT JOIN categories c ON c.id = i.category_id
-            WHERE 1 = 1";
-    $params = [];
+            WHERE i.account_id = :account_id";
+    $params = [':account_id' => $account_id];
 
     if($search != ""){
         $sql .= " AND i.name LIKE :search ESCAPE '!'";
@@ -79,26 +82,29 @@ function listIngredients($conn, $search, $category_id, $status, $today, $soon){
 }
 
 // numbers for the dashboard
-function inventoryCounts($conn, $today, $soon){
+function inventoryCounts($conn, $account_id, $today, $soon){
     $sql = "SELECT COUNT(*) AS total,
                    COALESCE(SUM(stock_qty * unit_cost), 0) AS stock_value,
                    COALESCE(SUM(CASE WHEN stock_qty <= 0 THEN 1 ELSE 0 END), 0) AS out_count,
                    COALESCE(SUM(CASE WHEN stock_qty > 0 AND reorder_level > 0 AND stock_qty <= reorder_level THEN 1 ELSE 0 END), 0) AS low_count,
                    COALESCE(SUM(CASE WHEN expiry_date IS NOT NULL AND expiry_date < :today THEN 1 ELSE 0 END), 0) AS expired_count,
                    COALESCE(SUM(CASE WHEN expiry_date IS NOT NULL AND expiry_date >= :today2 AND expiry_date <= :soon THEN 1 ELSE 0 END), 0) AS expiring_count
-            FROM ingredients";
+            FROM ingredients
+            WHERE account_id = :account_id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':today', $today);
     $stmt->bindParam(':today2', $today);
     $stmt->bindParam(':soon', $soon);
+    $stmt->bindParam(':account_id', $account_id);
     $stmt->execute();
     return $stmt->fetch();
 }
 
-function insertIngredient($conn, $name, $category_id, $base_unit, $reorder_level, $expiry_date){
-    $sql = "INSERT INTO ingredients (name, category_id, base_unit, stock_qty, unit_cost, reorder_level, expiry_date)
-            VALUES (:name, :category_id, :base_unit, 0, 0, :reorder_level, :expiry_date)";
+function insertIngredient($conn, $account_id, $name, $category_id, $base_unit, $reorder_level, $expiry_date){
+    $sql = "INSERT INTO ingredients (account_id, name, category_id, base_unit, stock_qty, unit_cost, reorder_level, expiry_date)
+            VALUES (:account_id, :name, :category_id, :base_unit, 0, 0, :reorder_level, :expiry_date)";
     $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':account_id', $account_id);
     $stmt->bindParam(':name', $name);
     $stmt->bindParam(':category_id', $category_id);
     $stmt->bindParam(':base_unit', $base_unit);
@@ -108,6 +114,7 @@ function insertIngredient($conn, $name, $category_id, $base_unit, $reorder_level
     return (int)$conn->lastInsertId();
 }
 
+// used only on a row that was locked before
 function updateIngredientStock($conn, $id, $stock_qty, $unit_cost){
     $sql = "UPDATE ingredients SET stock_qty = :stock_qty, unit_cost = :unit_cost WHERE id = :id";
     $stmt = $conn->prepare($sql);
@@ -125,20 +132,23 @@ function updateIngredientExpiry($conn, $id, $expiry_date){
     $stmt->execute();
 }
 
-function updateIngredientDetails($conn, $id, $category_id, $reorder_level, $expiry_date){
-    $sql = "UPDATE ingredients SET category_id = :category_id, reorder_level = :reorder_level, expiry_date = :expiry_date WHERE id = :id";
+function updateIngredientDetails($conn, $id, $account_id, $category_id, $reorder_level, $expiry_date){
+    $sql = "UPDATE ingredients SET category_id = :category_id, reorder_level = :reorder_level, expiry_date = :expiry_date
+            WHERE id = :id AND account_id = :account_id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':category_id', $category_id);
     $stmt->bindParam(':reorder_level', $reorder_level);
     $stmt->bindParam(':expiry_date', $expiry_date);
     $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':account_id', $account_id);
     $stmt->execute();
 }
 
-function deleteIngredient($conn, $id){
-    $sql = "DELETE FROM ingredients WHERE id = :id";
+function deleteIngredient($conn, $id, $account_id){
+    $sql = "DELETE FROM ingredients WHERE id = :id AND account_id = :account_id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':id', $id);
+    $stmt->bindParam(':account_id', $account_id);
     $stmt->execute();
 }
 
