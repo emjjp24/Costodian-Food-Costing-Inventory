@@ -84,13 +84,15 @@ function recipeDetails($conn, $recipe, $selling_price){
 // save a recipe (create when $recipe_id is null) and load its ingredients into the inventory
 // an ingredient that is not in the inventory yet is created with the purchase that was entered
 // a purchase is counted only the first time an ingredient is added to the recipe
-function saveRecipe($conn, $recipe_id, $data, $user_id){
+function saveRecipe($conn, $recipe_id, $data, $user){
 
+    $account_id = (int)$user['account_id'];
+    $user_id = (int)$user['id'];
     $notes = [];
     $conn->beginTransaction();
     try{
         if($data['category_id'] !== null){
-            $category = findCategory($conn, $data['category_id']);
+            $category = findCategory($conn, $data['category_id'], $account_id);
             if(!$category || $category['type'] != 'recipe'){
                 throw new Exception('The recipe category does not exist.');
             }
@@ -102,12 +104,12 @@ function saveRecipe($conn, $recipe_id, $data, $user_id){
 
         $linked = [];
         if($recipe_id === null){
-            $recipe_id = insertRecipe($conn, $data['name'], $data['category_id'], $servings, $other, $target, $data['notes'], $user_id);
+            $recipe_id = insertRecipe($conn, $account_id, $data['name'], $data['category_id'], $servings, $other, $target, $data['notes'], $user_id);
         } else {
-            if(!findRecipeById($conn, $recipe_id)){
+            if(!findRecipeById($conn, $recipe_id, $account_id)){
                 throw new Exception('Recipe not found.');
             }
-            updateRecipe($conn, $recipe_id, $data['name'], $data['category_id'], $servings, $other, $target, $data['notes']);
+            updateRecipe($conn, $recipe_id, $account_id, $data['name'], $data['category_id'], $servings, $other, $target, $data['notes']);
             foreach(listRecipeIngredients($conn, $recipe_id) as $old){
                 $linked[(int)$old['ingredient_id']] = true;
             }
@@ -117,7 +119,7 @@ function saveRecipe($conn, $recipe_id, $data, $user_id){
         $kept = [];
 
         foreach($data['lines'] as $line){
-            $ingredient = lockIngredientByName($conn, $line['name']);
+            $ingredient = lockIngredientByName($conn, $line['name'], $account_id);
             $qty_needed = decimalString($line['qty_needed'], 3);
 
             if($ingredient){
@@ -144,13 +146,13 @@ function saveRecipe($conn, $recipe_id, $data, $user_id){
                     throw new Exception($line['name'] . ' is not in the inventory yet. Enter the quantity bought and the price paid so it can be costed.');
                 }
                 if($line['category_id'] !== null){
-                    $category = findCategory($conn, $line['category_id']);
+                    $category = findCategory($conn, $line['category_id'], $account_id);
                     if(!$category || $category['type'] != 'ingredient'){
                         throw new Exception($line['name'] . ': the ingredient category does not exist.');
                     }
                 }
-                $id = insertIngredient($conn, $line['name'], $line['category_id'], $line['base_unit'], '0', null);
-                $ingredient = lockIngredient($conn, $id);
+                $id = insertIngredient($conn, $account_id, $line['name'], $line['category_id'], $line['base_unit'], '0', null);
+                $ingredient = lockIngredient($conn, $id, $account_id);
                 addStockToIngredient($conn, $ingredient, $line['purchase']['qty_base'], $line['purchase']['price_paid'], $line['purchase']['expiry_date'], $reference, $user_id);
                 insertRecipeIngredient($conn, $recipe_id, $id, $qty_needed);
             }

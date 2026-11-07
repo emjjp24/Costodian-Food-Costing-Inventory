@@ -1,11 +1,13 @@
 <?php
 // take stock out of one ingredient (type: stock_out for use, waste for spoiled or dropped food)
 // the stock can never go below zero
-function removeStock($conn, $ingredient_id, $qty, $unit, $type, $reference, $user_id){
+function removeStock($conn, $ingredient_id, $qty, $unit, $type, $reference, $user){
 
+    $account_id = (int)$user['account_id'];
+    $user_id = (int)$user['id'];
     $conn->beginTransaction();
     try{
-        $ingredient = lockIngredient($conn, $ingredient_id);
+        $ingredient = lockIngredient($conn, $ingredient_id, $account_id);
         if(!$ingredient){
             throw new Exception('Ingredient not found.');
         }
@@ -45,11 +47,13 @@ function removeStock($conn, $ingredient_id, $qty, $unit, $type, $reference, $use
 }
 
 // add stock to an existing ingredient (restock)
-function restockIngredient($conn, $data, $user_id){
+function restockIngredient($conn, $data, $user){
 
+    $account_id = (int)$user['account_id'];
+    $user_id = (int)$user['id'];
     $conn->beginTransaction();
     try{
-        $ingredient = lockIngredient($conn, $data['ingredient_id']);
+        $ingredient = lockIngredient($conn, $data['ingredient_id'], $account_id);
         if(!$ingredient){
             throw new Exception('Ingredient not found.');
         }
@@ -87,11 +91,13 @@ function restockIngredient($conn, $data, $user_id){
 
 // cook a recipe: every ingredient is taken out of the stock together
 // if even one ingredient is short, nothing is taken out
-function cookRecipe($conn, $recipe_id, $batches, $user_id){
+function cookRecipe($conn, $recipe_id, $batches, $user){
 
+    $account_id = (int)$user['account_id'];
+    $user_id = (int)$user['id'];
     $conn->beginTransaction();
     try{
-        $recipe = findRecipeById($conn, $recipe_id);
+        $recipe = findRecipeById($conn, $recipe_id, $account_id);
         if(!$recipe){
             throw new Exception('Recipe not found.');
         }
@@ -108,7 +114,7 @@ function cookRecipe($conn, $recipe_id, $batches, $user_id){
         $plan = [];
         $short = [];
         foreach($lines as $line){
-            $ingredient = lockIngredient($conn, $line['ingredient_id']);
+            $ingredient = lockIngredient($conn, $line['ingredient_id'], $account_id);
             $need = round((float)$line['qty_needed'] * $batches, 3);
             $stock = (float)$ingredient['stock_qty'];
             if(round($stock - $need, 3) < 0){

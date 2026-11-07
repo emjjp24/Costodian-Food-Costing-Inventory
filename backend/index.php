@@ -21,6 +21,7 @@ include_once($src . "config/database.php");
 include_once($src . "middlewares/session.php");
 include_once($src . "middlewares/role.php");
 
+include_once($src . "models/account.php");
 include_once($src . "models/user.php");
 include_once($src . "models/category.php");
 include_once($src . "models/ingredient.php");

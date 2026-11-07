@@ -1,6 +1,7 @@
 <?php
 function inventoryList($conn, $user){
 
+    $account_id = (int)$user['account_id'];
     $search = isset($_GET['search']) ? cleanText($_GET['search']) : "";
     $category_id = optionalId(isset($_GET['category_id']) ? $_GET['category_id'] : null);
     if($category_id === false){
@@ -13,7 +14,7 @@ function inventoryList($conn, $user){
     }
 
     $items = [];
-    foreach(listIngredients($conn, $search, $category_id, $status, date('Y-m-d'), soonDate()) as $row){
+    foreach(listIngredients($conn, $account_id, $search, $category_id, $status, date('Y-m-d'), soonDate()) as $row){
         $items[] = formatIngredient($row);
     }
     respond(true, 'OK', $items);
@@ -21,13 +22,14 @@ function inventoryList($conn, $user){
 
 function inventoryView($conn, $user){
 
+    $account_id = (int)$user['account_id'];
     $id = requestId(isset($_GET['id']) ? $_GET['id'] : 0);
-    $row = $id > 0 ? findIngredientById($conn, $id) : false;
+    $row = $id > 0 ? findIngredientById($conn, $id, $account_id) : false;
     if(!$row){
         respond(false, 'Ingredient not found.', null, 404);
     }
 
-    $filters = ['ingredient_id' => $id, 'type' => '', 'from' => '', 'to' => ''];
+    $filters = ['account_id' => $account_id, 'ingredient_id' => $id, 'type' => '', 'from' => '', 'to' => ''];
     $history = [];
     foreach(listMovements($conn, $filters, 20, 0) as $move){
         $history[] = formatMovement($move);
@@ -41,8 +43,9 @@ function inventoryView($conn, $user){
 
 function inventoryUpdate($conn, $user){
 
+    $account_id = (int)$user['account_id'];
     $id = requestId(isset($_POST['id']) ? $_POST['id'] : 0);
-    $row = $id > 0 ? findIngredientById($conn, $id) : false;
+    $row = $id > 0 ? findIngredientById($conn, $id, $account_id) : false;
     if(!$row){
         respond(false, 'Ingredient not found.', null, 404);
     }
@@ -53,20 +56,21 @@ function inventoryUpdate($conn, $user){
     }
 
     if($data['category_id'] !== null){
-        $category = findCategory($conn, $data['category_id']);
+        $category = findCategory($conn, $data['category_id'], $account_id);
         if(!$category || $category['type'] != 'ingredient'){
             respond(false, 'The ingredient category does not exist.', null, 400);
         }
     }
 
-    updateIngredientDetails($conn, $id, $data['category_id'], decimalString($data['reorder_level'], 3), $data['expiry_date']);
-    respond(true, 'Ingredient updated.', formatIngredient(findIngredientById($conn, $id)));
+    updateIngredientDetails($conn, $id, $account_id, $data['category_id'], decimalString($data['reorder_level'], 3), $data['expiry_date']);
+    respond(true, 'Ingredient updated.', formatIngredient(findIngredientById($conn, $id, $account_id)));
 }
 
 function inventoryDelete($conn, $user){
 
+    $account_id = (int)$user['account_id'];
     $id = requestId(isset($_POST['id']) ? $_POST['id'] : 0);
-    if($id == 0 || !findIngredientById($conn, $id)){
+    if($id == 0 || !findIngredientById($conn, $id, $account_id)){
         respond(false, 'Ingredient not found.', null, 404);
     }
 
@@ -75,7 +79,7 @@ function inventoryDelete($conn, $user){
         respond(false, 'This ingredient is used in ' . $used . ' recipe(s). Remove it from them first.', null, 400);
     }
 
-    deleteIngredient($conn, $id);
+    deleteIngredient($conn, $id, $account_id);
     respond(true, 'Ingredient deleted.');
 }
 ?>
