@@ -1,0 +1,178 @@
+/* the inventory page: four number cards, the table and a few small pieces.
+   the buttons, windows and form fields come from recipes.css */
+
+.stats-4{
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.stat-4{
+    background: linear-gradient(225deg, var(--accent-2), var(--accent-1));
+}
+
+.stat-money{
+    font-size: 30px;
+}
+
+.inv-table .row-actions{
+    text-align: right;
+    white-space: nowrap;
+}
+
+.inv-table .row-actions .btn{
+    margin-left: 6px;
+}
+
+.tag-stack{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.dialog-small{
+    width: min(480px, calc(100vw - 24px));
+}
+
+.dialog-head .hint{
+    margin: 4px 0 0;
+}
+
+/* the amount and its unit side by side */
+.amount-row{
+    display: grid;
+    grid-template-columns: 1fr 110px;
+    gap: 10px;
+}
+
+.save-row{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.detail-actions{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.dialog-sub .tag{
+    min-width: 0;
+    padding: 3px 10px;
+}
+
+.mini-table .tag{
+    min-width: 0;
+    padding: 2px 10px;
+}
+
+.mini-table .when{
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+#restock-fields[hidden]{
+    display: none;
+}
+
+@media (max-width: 1100px){
+    .stats-4{
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* on a phone every ingredient becomes a small card instead of a table row */
+@media (max-width: 700px){
+    /* the four number cards: small, two in a row */
+    .stats-4{
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+    .stats-4 .stat{
+        display: block;
+        padding: 8px 12px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(241, 135, 124, 0.2);
+    }
+    .stats-4 .stat-label{
+        font-size: 12px;
+    }
+    .stats-4 .stat-number{
+        margin: 2px 0 0;
+        font-size: 22px;
+    }
+    .stats-4 .stat-money{
+        font-size: 18px;
+    }
+    .stats-4 .stat-unit{
+        font-size: 11px;
+    }
+
+    .inv-table thead{
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+    }
+    .inv-table,
+    .inv-table tbody{
+        display: block;
+    }
+    .inv-table tr{
+        display: block;
+        margin-bottom: 12px;
+        padding: 10px 4px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+    }
+    .inv-table td{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 6px 10px;
+        border: 0;
+        text-align: right;
+    }
+    .inv-table td::before{
+        content: attr(data-label);
+        flex: none;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+        text-align: left;
+    }
+    .inv-table td.item{
+        display: block;
+        text-align: left;
+    }
+    .inv-table td.item::before,
+    .inv-table td.row-actions::before{
+        content: none;
+    }
+    .inv-table td.row-actions{
+        gap: 6px;
+    }
+    .inv-table td.row-actions .btn{
+        flex: 1;
+        margin-left: 0;
+    }
+    .inv-table td.empty{
+        display: block;
+        text-align: center;
+    }
+    .inv-table td.empty::before{
+        content: none;
+    }
+    .inv-table tr:has(td.empty){
+        border: 0;
+    }
+    .tag-stack{
+        align-items: flex-end;
+    }
+    .amount-row{
+        grid-template-columns: 1fr 90px;
+    }
+}
