@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory | Costodian</title>
+    <script src="../assets/js/theme.js"></script>
+    <script>
+        // the panel was closed last time: keep it closed (this runs before the page is drawn)
+        try{
+            if(localStorage.getItem('costodian-sidebar') == 'closed'){
+                document.documentElement.classList.add('sidebar-collapsed');
+            }
+        } catch(e){
+            // private mode: the panel just starts open
+        }
+    </script>
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/tables.css">
+    <!-- recipes.css has the buttons, windows and form fields that this page shares -->
+    <link rel="stylesheet" href="../assets/css/recipes.css">
+    <link rel="stylesheet" href="../assets/css/inventory.css">
+</head>
+<body>
+
+    <!-- the panel on the left -->
+    <aside class="sidebar" id="sidebar" aria-label="Pages">
+        <div class="side-head">
+            <a class="side-brand" href="dashboard.html">
+                <img src="../assets/images/logo.png" alt="Costodian logo">
+                <span>Costodian</span>
+            </a>
+            <button type="button" class="side-close" id="side-close" aria-label="Close the menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
+            </button>
+        </div>
+
+        <nav class="side-nav">
+            <a class="side-link" href="dashboard.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                Dashboard
+            </a>
+            <a class="side-link" href="recipes.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 2v20M4 2v6a3 3 0 0 0 6 0V2"/><path d="M17 22V2c-3 2-4 5-4 9h4"/></svg>
+                Recipes
+            </a>
+            <a class="side-link" href="inventory.html" aria-current="page">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>
+                Inventory
+            </a>
+            <a class="side-link" href="movements.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3l4 4-4 4M21 7H8M7 21l-4-4 4-4M3 17h13"/></svg>
+                Movements
+            </a>
+        </nav>
+
+        <!-- the settings button at the bottom of the panel -->
+        <div class="side-bottom">
+            <div class="settings-menu" id="settings-menu">
+                <button type="button" class="menu-item" id="theme-toggle" aria-label="Switch to dark mode">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                    <span class="label-dark">Dark mode</span>
+                    <span class="label-light">Light mode</span>
+                </button>
+                <button type="button" class="menu-item" id="logout-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                    Log out
+                </button>
+            </div>
+
+            <button type="button" class="side-link" id="settings-btn" aria-haspopup="true" aria-expanded="false" aria-controls="settings-menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Settings
+            </button>
+        </div>
+    </aside>
+
+    <div class="scrim" id="scrim"></div>
+
+    <div class="main">
+
+        <header class="topbar">
+            <button type="button" class="icon-btn menu-btn" id="menu-btn" aria-label="Open or close the menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+            </button>
+
+            <div class="search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input type="search" id="search" placeholder="Search ingredients..." aria-label="Search ingredients">
+            </div>
+
+            <div class="top-actions">
+                <div class="notif">
+                    <button type="button" class="icon-btn" id="bell-btn" aria-label="Items that need attention" aria-expanded="false" aria-controls="notif-menu">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+                        <span class="notif-dot" id="notif-dot" hidden></span>
+                    </button>
+                    <div class="notif-menu" id="notif-menu">
+                        <h2>Needs attention</h2>
+                        <ul id="notif-list"></ul>
+                    </div>
+                </div>
+
+                <div class="user">
+                    <div class="avatar" id="avatar" aria-hidden="true">?</div>
+                    <div class="user-text">
+                        <strong id="user-name">Loading...</strong>
+                        <small id="user-role"></small>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="title-row">
+                <div>
+                    <h1 class="page-title">Inventory</h1>
+                    <p class="page-sub">Your ingredients, how much is left and what needs attention.</p>
+                </div>
+                <div class="title-actions">
+                    <label class="visually-hidden" for="status-filter">Filter by status</label>
+                    <select id="status-filter" class="select-filter">
+                        <option value="">All items</option>
+                        <option value="alert">Needs attention</option>
+                        <option value="low">Low stock</option>
+                        <option value="out">Out of stock</option>
+                        <option value="expiring">Expiring soon</option>
+                        <option value="expired">Expired</option>
+                    </select>
+                    <label class="visually-hidden" for="category-filter">Filter by category</label>
+                    <select id="category-filter" class="select-filter">
+                        <option value="">All categories</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="page-message" class="alert" role="alert" hidden></div>
+
+            <section class="stats stats-4" aria-label="Summary">
+                <div class="stat stat-1">
+                    <p class="stat-label">Ingredients</p>
+                    <p class="stat-number" id="stat-total">-</p>
+                    <p class="stat-unit">items</p>
+                </div>
+                <div class="stat stat-2">
+                    <p class="stat-label">Low or out</p>
+                    <p class="stat-number" id="stat-low">-</p>
+                    <p class="stat-unit">to restock</p>
+                </div>
+                <div class="stat stat-3">
+                    <p class="stat-label">Near-Expiry</p>
+                    <p class="stat-number" id="stat-expiry">-</p>
+                    <p class="stat-unit">alerts</p>
+                </div>
+                <div class="stat stat-4">
+                    <p class="stat-label">Stock value</p>
+                    <p class="stat-number stat-money" id="stat-value">-</p>
+                    <p class="stat-unit">in your kitchen</p>
+                </div>
+            </section>
+
+            <section class="panel" aria-label="Ingredients">
+                <h2>Ingredients</h2>
+                <div class="table-wrap">
+                    <table class="table inv-table">
+                        <thead>
+                            <tr>
+                                <th>Ingredient</th>
+                                <th>In stock</th>
+                                <th>Cost</th>
+                                <th>Value</th>
+                                <th>Reorder at</th>
+                                <th>Expiry</th>
+                                <th>Status</th>
+                                <th><span class="visually-hidden">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-rows" aria-live="polite">
+                            <tr><td class="empty" colspan="8">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- the window to restock, use or waste -->
+    <dialog id="stock-dialog" class="dialog dialog-small" aria-labelledby="stock-title">
+        <form id="stock-form" novalidate>
+            <div class="dialog-head">
+                <div>
+                    <h2 id="stock-title">Restock</h2>
+                    <p class="hint" id="stock-hint"></p>
+                </div>
+                <button type="button" class="dialog-close" id="stock-cancel" aria-label="Close">&times;</button>
+            </div>
+            <div class="dialog-body">
+                <div id="stock-error" class="alert alert-error" role="alert" hidden></div>
+                <div class="form-grid">
+                    <label class="field">Amount
+                        <input type="text" id="s-qty" inputmode="decimal" placeholder="2, 0.5 or 1 1/2" autocomplete="off">
+                    </label>
+                    <label class="field">Unit
+                        <select id="s-unit"></select>
+                    </label>
+                    <div class="form-grid span-2" id="restock-fields">
+                        <label class="field">Price paid (&#8369;)
+                            <input type="text" id="s-price" inputmode="decimal" placeholder="Total you paid" autocomplete="off">
+                        </label>
+                        <label class="field">Expiry date (optional)
+                            <input type="date" id="s-expiry">
+                        </label>
+                    </div>
+                    <label class="field span-2"><span id="s-note-label">Note (optional)</span>
+                        <input type="text" id="s-note" maxlength="100" autocomplete="off">
+                    </label>
+                </div>
+            </div>
+            <div class="dialog-foot">
+                <button type="button" class="btn btn-line" id="stock-cancel-2">Cancel</button>
+                <button type="submit" class="btn btn-fill" id="stock-save">Save</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- the window with the details and the history of one ingredient -->
+    <dialog id="detail-dialog" class="dialog" aria-labelledby="detail-title">
+        <div class="dialog-head">
+            <div>
+                <h2 id="detail-title">Ingredient</h2>
+                <div class="dialog-sub" id="detail-sub"></div>
+            </div>
+            <button type="button" class="dialog-close" id="detail-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="dialog-body" id="detail-body"></div>
+    </dialog>
+
+    <script src="../api/client.js"></script>
+    <script src="../api/auth.js"></script>
+    <script src="../api/dashboard.js"></script>
+    <script src="../api/inventory.js"></script>
+    <script src="../validators/recipe.js"></script>
+    <script src="../validators/inventory.js"></script>
+    <script src="../assets/js/shell.js"></script>
+    <script src="../assets/js/inventory-helpers.js"></script>
+    <script src="../assets/js/inventory-draw.js"></script>
+    <script src="../assets/js/inventory-forms.js"></script>
+    <script src="../assets/js/inventory-page.js"></script>
+</body>
+</html>
