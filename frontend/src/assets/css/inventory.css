@@ -75,14 +75,39 @@
     display: none;
 }
 
+/* a row can be tapped to open its details */
+.inv-row{
+    cursor: pointer;
+}
+
+.inv-row:hover td{
+    background: var(--soft);
+}
+
+.inv-row:focus-visible{
+    outline: 3px solid var(--ring);
+    outline-offset: -3px;
+}
+
 @media (max-width: 1100px){
     .stats-4{
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-/* on a phone every ingredient becomes a small card instead of a table row */
+/* on a phone every ingredient becomes a short row instead of a table row */
 @media (max-width: 700px){
+    /* the two filters side by side, the Add button under them */
+    .title-actions{
+        flex-wrap: wrap;
+    }
+    .title-actions .select-filter{
+        flex: 1 1 40%;
+    }
+    .title-actions .btn{
+        flex: 1 1 100%;
+    }
+
     /* the four number cards: small, two in a row */
     .stats-4{
         grid-template-columns: 1fr 1fr;
@@ -109,6 +134,8 @@
         font-size: 11px;
     }
 
+    /* only the important things show in the list: name, how much is left, status and expiry.
+       tap a row to open the details (restock, use, waste, history) */
     .inv-table thead{
         position: absolute;
         width: 1px;
@@ -120,57 +147,67 @@
     .inv-table tbody{
         display: block;
     }
-    .inv-table tr{
-        display: block;
-        margin-bottom: 12px;
-        padding: 10px 4px;
-        border: 1px solid var(--line);
-        border-radius: 12px;
+    .inv-table tr.inv-row{
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 6px 12px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+    }
+    .inv-table tr.inv-row:last-child{
+        border-bottom: 0;
     }
     .inv-table td{
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 6px 10px;
+        display: block;
+        padding: 0;
         border: 0;
-        text-align: right;
-    }
-    .inv-table td::before{
-        content: attr(data-label);
-        flex: none;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 600;
-        text-align: left;
     }
     .inv-table td.item{
-        display: block;
+        grid-column: 1;
+        grid-row: 1;
         text-align: left;
     }
-    .inv-table td.item::before,
-    .inv-table td.row-actions::before{
-        content: none;
+    .inv-table td.item small{
+        display: block;
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 12px;
     }
+    .inv-table td.stock{
+        grid-column: 2;
+        grid-row: 1;
+        font-size: 15px;
+        font-weight: 700;
+        text-align: right;
+    }
+    .inv-table td.state{
+        grid-column: 1;
+        grid-row: 2;
+    }
+    .inv-table td.when{
+        grid-column: 2;
+        grid-row: 2;
+        color: var(--muted);
+        font-size: 12px;
+        text-align: right;
+    }
+    .inv-table td.no-expiry,
+    .inv-table td.extra,
     .inv-table td.row-actions{
-        gap: 6px;
+        display: none;
     }
-    .inv-table td.row-actions .btn{
-        flex: 1;
-        margin-left: 0;
+    .inv-table .tag-stack{
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
     }
     .inv-table td.empty{
-        display: block;
         text-align: center;
     }
-    .inv-table td.empty::before{
-        content: none;
-    }
     .inv-table tr:has(td.empty){
-        border: 0;
-    }
-    .tag-stack{
-        align-items: flex-end;
+        display: block;
+        padding: 16px;
     }
     .amount-row{
         grid-template-columns: 1fr 90px;

@@ -61,7 +61,7 @@ function drawTable(list, filtering){
         if(filtering){
             td.textContent = 'No ingredient matches your search.';
         } else {
-            td.textContent = 'Your inventory is empty. Ingredients are added when you save a recipe or buy stock.';
+            td.textContent = 'Your inventory is empty. Press "+ Add Ingredient" to add what you bought.';
         }
         row.appendChild(td);
         inventoryRows.appendChild(row);
@@ -78,13 +78,13 @@ function drawTable(list, filtering){
         }
         row.appendChild(name);
 
-        row.appendChild(cell('In stock')).textContent = item.stock_text;
-        row.appendChild(cell('Cost')).textContent = money(item.cost_per) + ' / ' + item.cost_per_unit;
-        row.appendChild(cell('Value')).textContent = money(item.stock_value);
-        row.appendChild(cell('Reorder at')).textContent = item.reorder_level > 0 ? item.reorder_text : '-';
-        row.appendChild(cell('Expiry', 'when')).textContent = expiryText(item);
+        row.appendChild(cell('In stock', 'stock')).textContent = item.stock_text;
+        row.appendChild(cell('Cost', 'extra')).textContent = money(item.cost_per) + ' / ' + item.cost_per_unit;
+        row.appendChild(cell('Value', 'extra')).textContent = money(item.stock_value);
+        row.appendChild(cell('Reorder at', 'extra')).textContent = item.reorder_level > 0 ? item.reorder_text : '-';
+        row.appendChild(cell('Expiry', item.expiry_date ? 'when' : 'when no-expiry')).textContent = expiryText(item);
 
-        var state = cell('Status');
+        var state = cell('Status', 'state');
         var tags = h('div', 'tag-stack');
         statusTags(item.status).forEach(function(tag){
             tags.appendChild(h('span', tag[1], tag[0]));
@@ -95,23 +95,41 @@ function drawTable(list, filtering){
         var actions = cell('', 'row-actions');
         var restock = h('button', 'btn btn-fill btn-sm', 'Restock');
         restock.type = 'button';
-        restock.addEventListener('click', function(){
+        restock.addEventListener('click', function(event){
+            event.stopPropagation();
             openStock('restock', item);
         });
         var use = h('button', 'btn btn-line btn-sm', 'Use');
         use.type = 'button';
-        use.addEventListener('click', function(){
+        use.addEventListener('click', function(event){
+            event.stopPropagation();
             openStock('use', item);
         });
         var more = h('button', 'btn btn-line btn-sm', 'Details');
         more.type = 'button';
-        more.addEventListener('click', function(){
+        more.addEventListener('click', function(event){
+            event.stopPropagation();
             openDetails(item.id);
         });
         actions.appendChild(restock);
         actions.appendChild(use);
         actions.appendChild(more);
         row.appendChild(actions);
+
+        // a tap (or Enter) on the row opens the details window, where Restock, Use and Waste are too
+        row.className = 'inv-row';
+        row.tabIndex = 0;
+        row.setAttribute('role', 'button');
+        row.setAttribute('aria-label', 'Details of ' + item.name);
+        row.addEventListener('click', function(){
+            openDetails(item.id);
+        });
+        row.addEventListener('keydown', function(event){
+            if(event.target === row && (event.key == 'Enter' || event.key == ' ')){
+                event.preventDefault();
+                openDetails(item.id);
+            }
+        });
 
         inventoryRows.appendChild(row);
     });
