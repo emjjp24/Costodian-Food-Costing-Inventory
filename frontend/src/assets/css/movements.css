@@ -1,0 +1,429 @@
+/* the movements page: filter bar, the table and the page buttons */
+
+.visually-hidden{
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.title-row{
+    margin-bottom: 20px;
+}
+
+.title-row .page-sub{
+    margin-bottom: 0;
+}
+
+/* ---------- filters ---------- */
+
+.filters{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: var(--card);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.filter{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 150px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.filter input,
+.filter select{
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.filter input:focus,
+.filter select:focus{
+    outline: 3px solid var(--ring);
+    border-color: var(--accent-1);
+}
+
+/* the date range: one rounded box with a calendar icon and the two dates */
+
+.filter-label{
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.range-box{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--input-bg);
+    color: var(--muted);
+}
+
+.range-box:focus-within{
+    outline: 3px solid var(--ring);
+    border-color: var(--accent-1);
+}
+
+.range-icon{
+    flex: none;
+    color: var(--accent-text);
+}
+
+.range-box input[type="date"]{
+    min-width: 0;
+    padding: 9px 2px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    font-size: 14px;
+}
+
+.range-box input[type="date"]:focus{
+    outline: none;
+}
+
+.range-dash{
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* the calendar pop-up and its small icon follow the light or dark theme */
+:root[data-theme="light"] input[type="date"]{
+    color-scheme: light;
+}
+
+:root[data-theme="dark"] input[type="date"]{
+    color-scheme: dark;
+}
+
+/* quick choices under the dates */
+.presets{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.preset{
+    padding: 3px 10px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.preset:hover{
+    border-color: var(--accent-1);
+    background: var(--soft);
+    color: var(--accent-text);
+}
+
+.clear-btn{
+    margin-left: auto;
+    padding: 9px 16px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--accent-text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.clear-btn:hover{
+    background: var(--soft);
+}
+
+/* ---------- table ---------- */
+
+.mov-table .when{
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.mov-table .item-name{
+    font-weight: 700;
+}
+
+.mov-table .qty{
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.mov-table .qty-stock_in{
+    color: var(--ok-text, #2e7d4f);
+}
+
+.mov-table .qty-stock_out,
+.mov-table .qty-waste{
+    color: var(--error-text);
+}
+
+/* the date: long on a computer, short on a phone */
+.d-short{
+    display: none;
+}
+
+.mov-row{
+    cursor: pointer;
+}
+
+.mov-row:hover td{
+    background: var(--soft);
+}
+
+.mov-row:focus-visible{
+    outline: 3px solid var(--ring);
+    outline-offset: -3px;
+}
+
+/* ---------- the small panel with the details ---------- */
+
+.sheet{
+    width: min(420px, calc(100vw - 24px));
+    padding: 20px 22px 22px;
+    border: 0;
+    border-radius: 18px;
+    background: var(--card);
+    color: var(--text);
+    box-shadow: var(--shadow);
+}
+
+.sheet::backdrop{
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.sheet-head{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.sheet-head h2{
+    margin: 0 0 8px;
+    font-size: 20px;
+}
+
+.sheet-close{
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.sheet-close:hover{
+    background: var(--soft);
+    color: var(--text);
+}
+
+.sheet-qty{
+    margin: 14px 0 12px;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.sheet-qty.qty-stock_in{
+    color: var(--ok-text, #2e7d4f);
+}
+
+.sheet-qty.qty-stock_out,
+.sheet-qty.qty-waste{
+    color: var(--error-text);
+}
+
+.sheet-list{
+    margin: 0;
+}
+
+.sheet-row{
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+    font-size: 14px;
+}
+
+.sheet-row dt{
+    flex: none;
+    color: var(--muted);
+}
+
+.sheet-row dd{
+    margin: 0;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px){
+    /* on a phone the panel slides up from the bottom */
+    .sheet{
+        width: 100%;
+        max-width: none;
+        margin: auto 0 0;
+        border-radius: 18px 18px 0 0;
+    }
+}
+
+/* ---------- page buttons ---------- */
+
+.pager-row{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.count-text{
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.pager{
+    display: flex;
+    gap: 6px;
+}
+
+.page-btn{
+    min-width: 34px;
+    height: 34px;
+    padding: 0 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.page-btn:hover:not(:disabled){
+    background: var(--soft);
+}
+
+.page-btn:disabled{
+    opacity: 0.4;
+    cursor: default;
+}
+
+.page-btn-on{
+    border-color: var(--accent-1);
+    color: var(--accent-text);
+    font-weight: 700;
+}
+
+@media (max-width: 700px){
+    .filters{
+        padding: 14px;
+    }
+    .filter{
+        flex: 1 1 100%;
+    }
+    .range-box input[type="date"]{
+        flex: 1;
+    }
+    .clear-btn{
+        margin-left: 0;
+    }
+
+    /* only the important things show in the list: item, type, quantity and date.
+       tap a row to see who did it and the notes */
+    .mov-table thead{
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+    }
+    .mov-table,
+    .mov-table tbody{
+        display: block;
+    }
+    .mov-table tr.mov-row{
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 4px 12px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+    }
+    .mov-table tr.mov-row:last-child{
+        border-bottom: 0;
+    }
+    .mov-table td{
+        display: block;
+        padding: 0;
+        border: 0;
+    }
+    .mov-table td.item-name{
+        grid-column: 1;
+        grid-row: 1;
+        font-size: 15px;
+    }
+    .mov-table td.qty{
+        grid-column: 2;
+        grid-row: 1;
+        font-size: 15px;
+        text-align: right;
+    }
+    .mov-table td.type-cell{
+        grid-column: 1;
+        grid-row: 2;
+    }
+    .mov-table td.when{
+        grid-column: 2;
+        grid-row: 2;
+        font-size: 12px;
+        text-align: right;
+    }
+    .mov-table td.extra{
+        display: none;
+    }
+    .d-full{
+        display: none;
+    }
+    .d-short{
+        display: inline;
+    }
+    .mov-table td.empty{
+        text-align: center;
+    }
+    .mov-table tr:has(td.empty){
+        display: block;
+        padding: 16px;
+    }
+}
