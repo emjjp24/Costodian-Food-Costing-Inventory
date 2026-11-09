@@ -64,7 +64,9 @@ function recipeDetails($conn, $recipe, $selling_price){
             'line_cost' => round($line_cost, 2),
             'stock_qty' => $stock,
             'stock_text' => formatQuantity($stock, $line['base_unit']),
-            'enough' => round($stock - $qty, 3) >= 0
+            'enough' => round($stock - $qty, 3) >= 0,
+            'bought_qty_text' => $line['bought_qty'] !== null ? formatQuantity((float)$line['bought_qty'], $line['base_unit']) : null,
+            'bought_price' => $line['bought_price'] !== null ? (float)$line['bought_price'] : null
         ];
     }
 
@@ -111,7 +113,7 @@ function saveRecipe($conn, $recipe_id, $data, $user){
             }
             updateRecipe($conn, $recipe_id, $account_id, $data['name'], $data['category_id'], $servings, $other, $target, $data['notes']);
             foreach(listRecipeIngredients($conn, $recipe_id) as $old){
-                $linked[(int)$old['ingredient_id']] = true;
+                $linked[(int)$old['ingredient_id']] = $old;
             }
         }
 
@@ -128,17 +130,32 @@ function saveRecipe($conn, $recipe_id, $data, $user){
                 }
                 $id = (int)$ingredient['id'];
 
+                $purchase = $line['purchase'];
+                $bought_qty = $purchase !== null ? decimalString($purchase['qty_base'], 3) : null;
+                $bought_price = $purchase !== null ? decimalString($purchase['price_paid'], 2) : null;
+
                 if(isset($linked[$id])){
-                    // already in this recipe, only the amount can change
+                    // already in this recipe: the amount can change, and so can what was bought
                     updateRecipeIngredientQty($conn, $recipe_id, $id, $qty_needed);
-                    if($line['purchase'] !== null){
-                        $notes[] = $ingredient['name'] . ' is already in this recipe, so the purchase was not added again. Use Restock to add more stock.';
+                    if($purchase !== null){
+                        $old = $linked[$id];
+                        if($old['bought_qty'] === null){
+                            // nothing was entered for this line before, so it counts as a purchase now
+                            addStockToIngredient($conn, $ingredient, $purchase['qty_base'], $purchase['price_paid'], $purchase['expiry_date'], $reference, $user_id);
+                            updateRecipeIngredientPurchase($conn, $recipe_id, $id, $bought_qty, $bought_price);
+                        } else {
+                            $same = abs((float)$old['bought_qty'] - $purchase['qty_base']) < 0.0005 && abs((float)$old['bought_price'] - $purchase['price_paid']) < 0.005;
+                            if(!$same){
+                                correctPurchase($conn, $ingredient, (float)$old['bought_qty'], (float)$old['bought_price'], $purchase['qty_base'], $purchase['price_paid'], $purchase['expiry_date'], "Edited purchase: " . $data['name'], $user_id);
+                                updateRecipeIngredientPurchase($conn, $recipe_id, $id, $bought_qty, $bought_price);
+                            }
+                        }
                     }
                 } else {
-                    if($line['purchase'] !== null){
-                        addStockToIngredient($conn, $ingredient, $line['purchase']['qty_base'], $line['purchase']['price_paid'], $line['purchase']['expiry_date'], $reference, $user_id);
+                    if($purchase !== null){
+                        addStockToIngredient($conn, $ingredient, $purchase['qty_base'], $purchase['price_paid'], $purchase['expiry_date'], $reference, $user_id);
                     }
-                    insertRecipeIngredient($conn, $recipe_id, $id, $qty_needed);
+                    insertRecipeIngredient($conn, $recipe_id, $id, $qty_needed, $bought_qty, $bought_price);
                 }
             } else {
                 // a new ingredient needs a purchase so that its cost is known
@@ -154,7 +171,7 @@ function saveRecipe($conn, $recipe_id, $data, $user){
                 $id = insertIngredient($conn, $account_id, $line['name'], $line['category_id'], $line['base_unit'], '0', null);
                 $ingredient = lockIngredient($conn, $id, $account_id);
                 addStockToIngredient($conn, $ingredient, $line['purchase']['qty_base'], $line['purchase']['price_paid'], $line['purchase']['expiry_date'], $reference, $user_id);
-                insertRecipeIngredient($conn, $recipe_id, $id, $qty_needed);
+                insertRecipeIngredient($conn, $recipe_id, $id, $qty_needed, decimalString($line['purchase']['qty_base'], 3), decimalString($line['purchase']['price_paid'], 2));
             }
             $kept[$id] = true;
         }
@@ -176,4 +193,4 @@ function saveRecipe($conn, $recipe_id, $data, $user){
 
     return ['id' => $recipe_id, 'notes' => $notes];
 }
-?>
+?>  
