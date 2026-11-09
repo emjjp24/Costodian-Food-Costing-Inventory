@@ -103,6 +103,9 @@ function addIngredientRow(line){
             hint.textContent = 'In your inventory: ' + known.stock_text + '. Use ' + UNIT_FAMILIES[known.base_unit].join(' or ') + ' here.';
             setUnitOptions(unitSelect, known.base_unit);
             setUnitOptions(boughtUnit, known.base_unit);
+            // starts on the small unit (g, ml, pcs) so 500 does not become 500 kg by accident
+            unitSelect.value = known.base_unit;
+            boughtUnit.value = known.base_unit;
         } else if(key != ""){
             hint.textContent = 'New ingredient. Open "What I bought" and enter the quantity and the price, so it can be costed.';
             setUnitOptions(unitSelect, null);
@@ -133,6 +136,15 @@ function addIngredientRow(line){
         amountInput.value = parts.amount;
         unitSelect.value = parts.unit;
         hint.textContent = 'In your inventory: ' + line.stock_text + '.';
+
+        // what was bought for this line before, so it can be corrected here
+        if(line.bought_qty_text){
+            var bought = splitQuantity(line.bought_qty_text);
+            boughtInput.value = bought.amount;
+            boughtUnit.value = bought.unit;
+            priceInput.value = line.bought_price;
+            more.open = true;
+        }
     }
 
     ingredientRows.appendChild(row);
@@ -267,7 +279,6 @@ recipeForm.addEventListener('submit', function(event){
                 text += ' ' + reply.data.notes.join(' ');
             }
             showMessage(text, true);
-            // new ingredients may have been added to the inventory
             loadIngredientNames();
             loadRecipes();
         } else {
