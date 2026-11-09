@@ -566,6 +566,18 @@
     font-size: 12px;
 }
 
+.hint-warn{
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--error-bg);
+    color: var(--error-text);
+}
+
+.hint-warn a{
+    color: inherit;
+    font-weight: 700;
+}
+
 .ing-hint:empty{
     display: none;
 }
