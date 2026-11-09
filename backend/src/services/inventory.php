@@ -93,4 +93,38 @@ function addStockToIngredient($conn, $ingredient, $qty_base, $price_paid, $expir
 
     return ['stock_qty' => $new_qty, 'unit_cost' => $new_cost];
 }
+// the stock and the unit cost after a purchase was edited (no database, so it can be tested alone)
+// the old purchase is taken out of the average and the corrected one is put in
+// gives [new stock, new unit cost], or null when the stock would go below zero
+function correctedStockAndCost($stock, $unit_cost, $old_qty, $old_price, $new_qty, $new_price){
+    $new_stock = round($stock - $old_qty + $new_qty, 3);
+    if($new_stock < 0){
+        return null;
+    }
+    $new_unit_price = $new_price / $new_qty;
+    $value = ($stock * $unit_cost) - $old_price + $new_price;
+    if($new_stock <= 0 || $value <= 0){
+        return [$new_stock, round($new_unit_price, 5)];
+    }
+    return [$new_stock, round($value / $new_stock, 5)];
+}
+
+// the person edited what was bought for a recipe line: fix the stock and the cost of the locked ingredient
+// call it inside a transaction
+function correctPurchase($conn, $ingredient, $old_qty, $old_price, $new_qty, $new_price, $expiry_date, $reference, $user_id){
+
+    $result = correctedStockAndCost((float)$ingredient['stock_qty'], (float)$ingredient['unit_cost'], $old_qty, $old_price, $new_qty, $new_price);
+    if($result === null){
+        throw new Exception('You already used more of ' . $ingredient['name'] . ' than the quantity you entered, so it cannot be lowered that far. Use Restock in Inventory to add more stock.');
+    }
+    if($result[0] > MAX_BASE_QUANTITY){
+        throw new Exception('The stock of ' . $ingredient['name'] . ' would be too large.');
+    }
+
+    updateIngredientStock($conn, $ingredient['id'], decimalString($result[0], 3), decimalString($result[1], 5));
+    if($expiry_date !== null){
+        updateIngredientExpiry($conn, $ingredient['id'], $expiry_date);
+    }
+    insertMovement($conn, $ingredient['id'], 'adjustment', decimalString(abs($new_qty - $old_qty), 3), decimalString($new_price / $new_qty, 5), $reference, $user_id);
+}
 ?>
