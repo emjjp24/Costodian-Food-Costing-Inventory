@@ -111,42 +111,10 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    border-top: 4px solid var(--accent-1);
     border-radius: 16px;
     background: var(--card);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-}
-
-/* the picture part: a photo when there is one, a colored box with an icon when there is not */
-.card-img{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    aspect-ratio: 4 / 3;
-    color: rgba(59, 29, 20, 0.45);
-}
-
-.card-img svg{
-    width: 56px;
-    height: 56px;
-}
-
-.card-img img{
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.img-0{
-    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-}
-
-.img-1{
-    background: linear-gradient(315deg, var(--accent-1), var(--accent-2));
-}
-
-.img-2{
-    background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
 }
 
 .card-body{
@@ -608,6 +576,11 @@
     margin-top: 2px;
 }
 
+/* no picture area on the recipe cards */
+.card-img{
+    display: none;
+}
+
 /* ---------- phones ---------- */
 
 @media (max-width: 700px){
@@ -624,10 +597,6 @@
     .cards{
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 12px;
-    }
-    .card-img svg{
-        width: 40px;
-        height: 40px;
     }
     .card-body{
         padding: 10px 12px 12px;
