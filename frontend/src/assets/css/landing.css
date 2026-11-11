@@ -116,14 +116,45 @@ html{
 /* ---------- home (hero) ---------- */
 
 .hero{
+    position: relative;
+    overflow: hidden;
     padding-top: 128px;
     padding-bottom: 80px;
 }
 
+/* soft glows behind the home section (they fade out, so there is no hard edge) */
+.hero::before,
+.hero::after{
+    content: "";
+    position: absolute;
+    z-index: 0;
+    border-radius: 50%;
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.hero::before{
+    width: 520px;
+    height: 520px;
+    top: -120px;
+    right: -120px;
+    background: radial-gradient(circle, var(--accent-2) 0%, transparent 68%);
+}
+
+.hero::after{
+    width: 460px;
+    height: 460px;
+    bottom: 0;
+    left: -120px;
+    background: radial-gradient(circle, var(--accent-1) 0%, transparent 68%);
+}
+
 .hero-grid{
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: 1.1fr 1fr;
-    gap: 44px;
+    gap: 52px;
     align-items: center;
 }
 
@@ -140,8 +171,16 @@ html{
 
 .hero h1{
     margin: 0 0 14px;
-    font-size: clamp(30px, 5vw, 46px);
-    line-height: 1.15;
+    font-size: clamp(32px, 5.2vw, 52px);
+    line-height: 1.1;
+}
+
+/* the colored words in the big title */
+.mark{
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .hero-text p{
@@ -157,12 +196,47 @@ html{
     gap: 12px;
 }
 
+.hero-points{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin: 22px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.hero-points li::before{
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+}
+
 /* the sample costing card in the home section */
+.hero-visual{
+    position: relative;
+    padding: 30px 0 34px;
+}
+
 .sample{
     padding: 24px;
-    border-radius: 16px;
+    border-radius: 18px;
     background: var(--card);
     box-shadow: var(--shadow);
+    border-top: 4px solid var(--accent-1);
+}
+
+.sample-top{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .sample-label{
@@ -175,8 +249,8 @@ html{
 }
 
 .sample h3{
-    margin: 0 0 14px;
-    font-size: 20px;
+    margin: 0;
+    font-size: 21px;
 }
 
 .sample-row{
@@ -203,6 +277,7 @@ html{
     background: var(--soft);
     display: flex;
     justify-content: space-between;
+    gap: 10px;
     font-weight: 700;
 }
 
@@ -212,16 +287,126 @@ html{
     color: var(--muted);
 }
 
+/* the small status chips that float over the sample card */
+.float{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    font-size: 13px;
+}
+
+.float strong{
+    display: block;
+}
+
+.float span:not(.dot){
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.float-a{
+    top: 0;
+    left: -26px;
+}
+
+.float-b{
+    bottom: 0;
+    right: -14px;
+}
+
+.dot{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex: none;
+}
+
+.dot-warn{ background: var(--accent-1); }
+.dot-ok{ background: #3fae6a; }
+
+/* small tags: Costed, Low, In stock */
+.tag{
+    display: inline-block;
+    padding: 3px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.tag-ok{
+    background: var(--ok-bg);
+    color: var(--ok-text);
+}
+
+.tag-warn{
+    background: var(--soft);
+    color: var(--accent-text);
+    border: 1px solid var(--accent-1);
+}
+
+/* ---------- quick facts strip ---------- */
+
+.strip{
+    padding: 0 20px;
+}
+
+.strip-grid{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    padding: 20px 8px;
+    border-radius: 16px;
+    background: var(--card);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+}
+
+.strip-grid div{
+    padding: 6px 18px;
+    border-right: 1px solid var(--line);
+}
+
+.strip-grid div:last-child{
+    border-right: 0;
+}
+
+.strip-grid strong{
+    display: block;
+    font-size: 17px;
+    color: var(--accent-text);
+}
+
+.strip-grid span{
+    font-size: 13px;
+    color: var(--muted);
+}
+
 /* ---------- section titles ---------- */
 
 .section-title{
     margin: 0 0 8px;
     text-align: center;
-    font-size: clamp(24px, 3.5vw, 32px);
+    font-size: clamp(24px, 3.5vw, 34px);
+}
+
+.section-title::after{
+    content: "";
+    display: block;
+    width: 56px;
+    height: 4px;
+    margin: 12px auto 0;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
 }
 
 .section-intro{
-    margin: 0 auto 36px;
+    margin: 14px auto 36px;
     max-width: 620px;
     text-align: center;
     color: var(--muted);
@@ -236,8 +421,33 @@ html{
     align-items: start;
 }
 
-.about-grid p{
+.about-text p{
     margin: 0 0 14px;
+    color: var(--muted);
+}
+
+.values{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.values div{
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--card);
+    border: 1px solid var(--line);
+}
+
+.values strong{
+    display: block;
+    margin-bottom: 2px;
+    color: var(--accent-text);
+}
+
+.values span{
+    font-size: 13px;
     color: var(--muted);
 }
 
@@ -247,9 +457,10 @@ html{
 }
 
 .audience div{
-    padding: 18px;
-    border-radius: 12px;
+    padding: 20px;
+    border-radius: 14px;
     background: var(--soft);
+    border-left: 4px solid var(--accent-1);
 }
 
 .audience strong{
@@ -266,15 +477,21 @@ html{
 
 .features{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 18px;
 }
 
 .feature{
     padding: 22px;
     border-radius: 14px;
-    background: var(--card);
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.feature:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
 }
 
 .feature .icon{
@@ -296,7 +513,7 @@ html{
 
 .feature h3{
     margin: 0 0 6px;
-    font-size: 17px;
+    font-size: 16px;
 }
 
 .feature p{
@@ -305,9 +522,72 @@ html{
     color: var(--muted);
 }
 
+/* ---------- a look inside ---------- */
+
+.peek-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.peek{
+    padding: 22px;
+    border-radius: 16px;
+    background: var(--card);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    border-top: 4px solid var(--accent-1);
+}
+
+.peek h3{
+    margin: 0 0 4px;
+    font-size: 19px;
+}
+
+.peek > p{
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.peek-box{
+    padding: 4px 14px;
+    border-radius: 12px;
+    background: var(--soft);
+}
+
+.peek-line{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+}
+
+.peek-line:last-child{
+    border-bottom: 0;
+}
+
+.peek-line > span{
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.peek-line .plus{ color: var(--ok-text); font-weight: 700; }
+.peek-line .minus{ color: var(--accent-text); font-weight: 700; }
+
+.peek-note{
+    margin: 16px 0 0;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+}
+
 /* ---------- how it works ---------- */
 
 .steps{
+    position: relative;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 18px;
@@ -317,14 +597,15 @@ html{
 }
 
 .steps li{
-    padding: 20px;
+    padding: 22px 20px;
     border-radius: 14px;
-    background: var(--soft);
+    background: var(--bg);
+    border: 1px solid var(--line);
 }
 
 .step-number{
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     margin-bottom: 10px;
     display: flex;
     align-items: center;
@@ -346,11 +627,61 @@ html{
     color: var(--muted);
 }
 
+/* ---------- questions ---------- */
+
+.faq-wrap{
+    max-width: 720px;
+}
+
+.faq{
+    margin-bottom: 10px;
+    border-radius: 12px;
+    background: var(--card);
+    border: 1px solid var(--line);
+}
+
+.faq summary{
+    padding: 15px 18px;
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.faq summary::-webkit-details-marker{
+    display: none;
+}
+
+.faq summary::after{
+    content: "+";
+    font-size: 22px;
+    line-height: 1;
+    color: var(--accent-text);
+}
+
+.faq[open] summary::after{
+    content: "\2212";
+}
+
+.faq p{
+    margin: 0;
+    padding: 0 18px 16px;
+    font-size: 15px;
+    color: var(--muted);
+}
+
 /* ---------- join us ---------- */
 
+.section-tight{
+    padding-top: 24px;
+}
+
 .cta{
-    padding: 48px 24px;
-    border-radius: 20px;
+    padding: 52px 24px;
+    border-radius: 22px;
     text-align: center;
     background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
     color: #3b1d14;
@@ -358,7 +689,7 @@ html{
 
 .cta h2{
     margin: 0 0 8px;
-    font-size: clamp(24px, 3.5vw, 32px);
+    font-size: clamp(24px, 3.5vw, 34px);
 }
 
 .cta p{
@@ -394,10 +725,57 @@ html{
 /* ---------- footer ---------- */
 
 .footer{
-    padding: 26px 20px;
+    padding: 40px 20px 22px;
+    background: var(--card);
+    border-top: 1px solid var(--line);
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.footer-grid{
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 30px;
+}
+
+.footer-brand{
+    margin-bottom: 8px;
+}
+
+.footer p{
+    margin: 0;
+    max-width: 320px;
+}
+
+.footer h4{
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.footer-grid a:not(.brand){
+    display: block;
+    padding: 3px 0;
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.footer-grid a:not(.brand):hover{
+    color: var(--accent-text);
+}
+
+.footer .copy{
+    max-width: none;
+    margin-top: 26px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
     text-align: center;
     font-size: 13px;
-    color: var(--muted);
+}
+
+/* the logo turns white in dark mode */
+:root[data-theme="dark"] .brand-logo{
+    filter: brightness(0) invert(1);
 }
 
 /* the sections stop under the fixed top panel when a menu link is clicked */
@@ -405,18 +783,52 @@ section[id]{
     scroll-margin-top: 64px;
 }
 
+/* cards fade in while scrolling (landing.html adds .fade, then .shown) */
+.fade{
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.fade.shown{
+    opacity: 1;
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    .fade{ opacity: 1; transform: none; transition: none; }
+    .feature{ transition: none; }
+}
+
 /* ---------- smaller screens ---------- */
+
+@media (max-width: 960px){
+    .features{
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
 
 @media (max-width: 860px){
     .hero-grid,
     .about-grid{
         grid-template-columns: 1fr;
     }
-    .features{
-        grid-template-columns: repeat(2, 1fr);
+    .hero-visual{
+        max-width: 460px;
+    }
+    .peek-grid{
+        grid-template-columns: 1fr;
     }
     .steps{
         grid-template-columns: repeat(2, 1fr);
+    }
+    .strip-grid{
+        grid-template-columns: repeat(2, 1fr);
+        row-gap: 14px;
+    }
+    .strip-grid div:nth-child(2){
+        border-right: 0;
     }
 }
 
@@ -457,7 +869,18 @@ section[id]{
         padding-top: 100px;
     }
     .features,
-    .steps{
+    .steps,
+    .values,
+    .footer-grid{
         grid-template-columns: 1fr;
+    }
+    .float-a{
+        left: -6px;
+    }
+    .float-b{
+        right: -6px;
+    }
+    .strip{
+        padding: 0 16px;
     }
 }

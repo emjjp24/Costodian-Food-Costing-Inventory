@@ -69,13 +69,16 @@
         </main>
     </div>
 
-        <script src="src/api/client.js"></script>
+    <script src="src/api/client.js"></script>
     <script src="src/api/auth.js"></script>
     <script src="src/validators/login.js"></script>
+    <script src="src/assets/js/auth-guard.js"></script>
     <script>
-        // where to go after a successful login (put dashboard.html here when that page exists)
-        // while it is empty, the page just shows a welcome message
-        var AFTER_LOGIN_PAGE = "";
+        // where to go after a successful login
+        var AFTER_LOGIN_PAGE = "src/pages/dashboard.html";
+
+        // already signed in? skip this page
+        skipLoginIfSignedIn(AFTER_LOGIN_PAGE);
 
         var form = document.getElementById('login-form');
         var message = document.getElementById('message');
