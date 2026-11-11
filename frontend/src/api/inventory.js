@@ -49,3 +49,8 @@ function wasteIngredient(data){
 function getIngredientCategories(){
     return apiGet('categories/list', {type: 'ingredient'});
 }
+
+// a new ingredient with what you paid for it: name, category_id, qty, unit, price_paid, expiry_date, reorder_level
+function createIngredient(data){
+    return apiPost('inventory/create', data);
+}

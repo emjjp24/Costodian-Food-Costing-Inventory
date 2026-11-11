@@ -25,7 +25,9 @@
             <a href="#home">Home</a>
             <a href="#about">About Us</a>
             <a href="#features">Features</a>
+            <a href="#inside">Inside the app</a>
             <a href="#how">How it works</a>
+            <a href="#faq">FAQ</a>
             <a href="index.html" class="btn btn-line">Log in</a>
             <a href="src/pages/signup.html" class="btn btn-fill">Sign up</a>
         </nav>
@@ -48,39 +50,78 @@
             <div class="container hero-grid">
                 <div class="hero-text">
                     <span class="eyebrow">Free for home cooks and small food sellers</span>
-                    <h1>Know what every dish really costs.</h1>
+                    <h1>Know what every dish <span class="mark">really costs.</span></h1>
                     <p>Costodian works out the cost of your recipes, suggests a selling price, and keeps track of your ingredients so you never run out by surprise.</p>
                     <div class="hero-buttons">
                         <a href="src/pages/signup.html" class="btn btn-fill">Join us for free</a>
-                        <a href="index.html" class="btn btn-line">Log in</a>
+                        <a href="#inside" class="btn btn-line">See inside the app</a>
                     </div>
+                    <ul class="hero-points">
+                        <li>No credit card</li>
+                        <li>Works on your phone</li>
+                        <li>Your data stays in your account</li>
+                    </ul>
                 </div>
 
                 <!-- an example only, to show what the app does -->
-                <div class="sample" aria-label="Example of a costed recipe">
-                    <p class="sample-label">Example</p>
-                    <h3>Banana Bread</h3>
-                    <div class="sample-row"><span>Ingredients (whole batch)</span><span>₱185.00</span></div>
-                    <div class="sample-row"><span>Servings</span><span>10</span></div>
-                    <div class="sample-row"><span>Cost per serving</span><span>₱18.50</span></div>
-                    <div class="sample-total"><span>Price to sell (35% food cost)</span><span>₱52.86</span></div>
-                    <p class="sample-note">Sample numbers only. Yours come from your own ingredient prices.</p>
+                <div class="hero-visual">
+                    <div class="sample" aria-label="Example of a costed recipe">
+                        <div class="sample-top">
+                            <div>
+                                <p class="sample-label">Example recipe</p>
+                                <h3>Banana Bread</h3>
+                            </div>
+                            <span class="tag tag-ok">Costed</span>
+                        </div>
+                        <div class="sample-row"><span>Flour &middot; 2 cups</span><span>&#8369;48.00</span></div>
+                        <div class="sample-row"><span>Bananas &middot; 4 pcs</span><span>&#8369;60.00</span></div>
+                        <div class="sample-row"><span>Sugar &middot; 3/4 cup</span><span>&#8369;27.00</span></div>
+                        <div class="sample-row"><span>Butter &middot; 1/2 cup</span><span>&#8369;50.00</span></div>
+                        <div class="sample-row"><span>Cost per serving (10)</span><span>&#8369;18.50</span></div>
+                        <div class="sample-total"><span>Price to sell (35% food cost)</span><span>&#8369;52.86</span></div>
+                        <p class="sample-note">Sample numbers only. Yours come from your own ingredient prices.</p>
+                    </div>
+
+                    <div class="float float-a">
+                        <span class="dot dot-warn"></span>
+                        <div><strong>Flour is running low</strong><span>1.2 kg left</span></div>
+                    </div>
+                    <div class="float float-b">
+                        <span class="dot dot-ok"></span>
+                        <div><strong>Batch cooked</strong><span>Stock updated for you</span></div>
+                    </div>
                 </div>
             </div>
         </section>
 
+        <!-- quick facts -->
+        <section class="strip" aria-label="Quick facts">
+            <div class="container strip-grid">
+                <div><strong>Every serving</strong><span>costed from your own prices</span></div>
+                <div><strong>Stock updates</strong><span>by itself as you cook</span></div>
+                <div><strong>Alerts</strong><span>for low stock and near expiry</span></div>
+                <div><strong>Any screen</strong><span>computer, tablet or phone</span></div>
+            </div>
+        </section>
+
         <!-- ABOUT US -->
-        <section class="section section-alt" id="about">
+        <section class="section" id="about">
             <div class="container">
                 <h2 class="section-title">About Us</h2>
                 <p class="section-intro">A simple tool made for people who cook and sell food, not for accountants.</p>
 
                 <div class="about-grid">
-                    <div>
+                    <div class="about-text">
                         <!-- edit this text to tell your own story and add your team or school name -->
                         <p>Costodian is a food costing and inventory system. Many home cooks and small food sellers guess their prices, and only find out an ingredient ran out when they already started cooking.</p>
                         <p>We built Costodian to fix that. You enter your recipes once, and the system works out the cost of each dish, suggests a price that protects your profit, and keeps your ingredient stock up to date as you cook.</p>
                         <p>It understands the way people really measure: halves, quarters and mixed numbers like 1 1/2, not only decimals.</p>
+
+                        <div class="values">
+                            <div><strong>Simple</strong><span>Nothing to learn first</span></div>
+                            <div><strong>Accurate</strong><span>Costs follow what you paid</span></div>
+                            <div><strong>Private</strong><span>Each account sees only its own data</span></div>
+                        </div>
                     </div>
 
                     <div class="audience">
@@ -98,7 +139,7 @@
         </section>
 
         <!-- FEATURES -->
-        <section class="section" id="features">
+        <section class="section section-alt" id="features">
             <div class="container">
                 <h2 class="section-title">What Costodian does for you</h2>
                 <p class="section-intro">Everything you need to cost a dish and keep your pantry in order.</p>
@@ -109,7 +150,7 @@
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6"/></svg>
                         </div>
                         <h3>Recipe costing</h3>
-                        <p>See the cost of the whole batch and of every serving, with your own ingredient prices.</p>
+                        <p>See the cost of the whole batch and of every serving, plus a selling price that fits the food cost you want.</p>
                     </div>
                     <div class="feature">
                         <div class="icon">
@@ -141,12 +182,67 @@
                     </div>
                     <div class="feature">
                         <div class="icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><path d="M7.5 7.5h.01"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h13l-3-3M17 17H4l3 3"/></svg>
                         </div>
-                        <h3>Price suggestions</h3>
-                        <p>Pick the food cost you want and get a selling price that fits it.</p>
+                        <h3>Stock movements</h3>
+                        <p>A history of everything bought, used and wasted, with dates you can filter.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                        </div>
+                        <h3>Your own account</h3>
+                        <p>Everyone who signs up gets their own recipes and inventory. Nobody else sees them.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+                        </div>
+                        <h3>Made for phones too</h3>
+                        <p>Compact lists and a light or dark mode, so it is easy to use in the kitchen.</p>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- INSIDE THE APP: small examples built with html, no pictures needed -->
+        <section class="section" id="inside">
+            <div class="container">
+                <h2 class="section-title">A look inside</h2>
+                <p class="section-intro">Three tabs, each one with a clear job.</p>
+
+                <div class="peek-grid">
+                    <article class="peek">
+                        <h3>Recipes</h3>
+                        <p>Cost every dish and see the price to sell.</p>
+                        <div class="peek-box">
+                            <div class="peek-line"><strong>Chicken Adobo</strong><span>&#8369;42.30 / serving</span></div>
+                            <div class="peek-line"><strong>Banana Bread</strong><span>&#8369;18.50 / serving</span></div>
+                            <div class="peek-line"><strong>Leche Flan</strong><span>&#8369;24.10 / serving</span></div>
+                        </div>
+                    </article>
+
+                    <article class="peek">
+                        <h3>Inventory</h3>
+                        <p>See what is left and what needs attention.</p>
+                        <div class="peek-box">
+                            <div class="peek-line"><strong>Flour</strong><span class="tag tag-warn">Low</span></div>
+                            <div class="peek-line"><strong>Pork</strong><span class="tag tag-ok">In stock</span></div>
+                            <div class="peek-line"><strong>Milk</strong><span class="tag tag-warn">Expiring soon</span></div>
+                        </div>
+                    </article>
+
+                    <article class="peek">
+                        <h3>Movements</h3>
+                        <p>Every purchase, use and waste in one list.</p>
+                        <div class="peek-box">
+                            <div class="peek-line"><strong>Restock &middot; Sugar</strong><span class="plus">+2 kg</span></div>
+                            <div class="peek-line"><strong>Cooked &middot; Banana Bread</strong><span class="minus">&minus;500 g</span></div>
+                            <div class="peek-line"><strong>Waste &middot; Milk</strong><span class="minus">&minus;1 L</span></div>
+                        </div>
+                    </article>
+                </div>
+                <p class="peek-note">Examples only, made up to show how the tabs look.</p>
             </div>
         </section>
 
@@ -181,8 +277,37 @@
             </div>
         </section>
 
+        <!-- FAQ -->
+        <section class="section" id="faq">
+            <div class="container faq-wrap">
+                <h2 class="section-title">Questions people ask</h2>
+                <p class="section-intro">Short answers before you sign up.</p>
+
+                <details class="faq" open>
+                    <summary>Is it really free?</summary>
+                    <p>Yes. You can create an account and use every tab without paying.</p>
+                </details>
+                <details class="faq">
+                    <summary>Do I have to type in my ingredients one by one?</summary>
+                    <p>Only once. When you add a recipe, new ingredients are saved to your inventory automatically, and next time you pick them from a list.</p>
+                </details>
+                <details class="faq">
+                    <summary>What if the price of an ingredient changes?</summary>
+                    <p>Restock it with the new price. Costodian uses the average of what you paid, so your recipe costs stay fair.</p>
+                </details>
+                <details class="faq">
+                    <summary>Can other people see my recipes?</summary>
+                    <p>No. Each account has its own recipes, inventory and history, and only you can see them when you are signed in.</p>
+                </details>
+                <details class="faq">
+                    <summary>Can I use it on my phone?</summary>
+                    <p>Yes. The pages fit small screens, with compact lists and a details panel when you tap an item.</p>
+                </details>
+            </div>
+        </section>
+
         <!-- JOIN US -->
-        <section class="section" id="join">
+        <section class="section section-tight" id="join">
             <div class="container">
                 <div class="cta">
                     <h2>Join us today</h2>
@@ -198,7 +323,28 @@
     </main>
 
     <footer class="footer">
-        <p>&copy; Costodian. Food costing and inventory for home cooks and small food sellers.</p>
+        <div class="container footer-grid">
+            <div>
+                <a class="brand footer-brand" href="#home">
+                    <img class="brand-logo" src="src/assets/images/logo.png" alt="" width="30" height="30">
+                    <span class="brand-name">Costodian</span>
+                </a>
+                <p>Food costing and inventory for home cooks and small food sellers.</p>
+            </div>
+            <div>
+                <h4>Explore</h4>
+                <a href="#about">About Us</a>
+                <a href="#features">Features</a>
+                <a href="#how">How it works</a>
+                <a href="#faq">FAQ</a>
+            </div>
+            <div>
+                <h4>Account</h4>
+                <a href="src/pages/signup.html">Sign up</a>
+                <a href="index.html">Log in</a>
+            </div>
+        </div>
+        <p class="copy">&copy; Costodian. A school project.</p>
     </footer>
 
     <script>
@@ -222,6 +368,23 @@
                 setMenu(false);
             });
         });
+
+        // cards fade in as you scroll down (the page still works without this)
+        var fadeItems = document.querySelectorAll('.feature, .peek, .steps li, .faq, .audience div, .strip-grid div');
+        if('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+            var watcher = new IntersectionObserver(function(entries){
+                entries.forEach(function(entry){
+                    if(entry.isIntersecting){
+                        entry.target.classList.add('shown');
+                        watcher.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15 });
+            fadeItems.forEach(function(item){
+                item.classList.add('fade');
+                watcher.observe(item);
+            });
+        }
     </script>
 </body>
 </html>

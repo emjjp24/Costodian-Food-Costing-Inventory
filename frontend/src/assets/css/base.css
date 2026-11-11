@@ -65,6 +65,11 @@ body::after{
     background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200' fill='none' stroke='%23f6b274' stroke-opacity='0.09' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><g transform='translate(40 45) rotate(-30)'><ellipse cx='0' cy='-10' rx='7' ry='10'/><path d='M0 0v28'/></g><g transform='translate(142 50) rotate(25)'><path d='M-7 -20v12q0 7 7 7t7 -7v-12M0 -20v12M0 1v26'/></g><g transform='translate(50 142)'><rect x='-12' y='-8' width='24' height='28' rx='4'/><rect x='-14' y='-16' width='28' height='8' rx='2'/></g><g transform='translate(146 146) rotate(-20)'><ellipse cx='0' cy='-8' rx='8' ry='14'/><ellipse cx='0' cy='-8' rx='3' ry='14'/><path d='M0 6v22'/></g></svg>");
 }
 
+:root[data-theme="dark"] .brand-logo,
+:root[data-theme="dark"] .side-brand img{
+    filter: brightness(0) invert(1) !important;
+}
+
 /* on phones the icons are a bit smaller */
 @media (max-width: 700px){
     body::after{

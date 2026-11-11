@@ -119,4 +119,76 @@ function saveDetails(item, values, errorBox, button){
             errorBox.hidden = false;
         }
     });
-}  
+}
+
+// ---------- add a new ingredient ----------
+
+var addDialog = document.getElementById('add-dialog');
+var addForm = document.getElementById('add-form');
+var addError = document.getElementById('add-error');
+
+function openAdd(){
+    clearMessage();
+    addForm.reset();
+    addError.hidden = true;
+    fillCategorySelect(document.getElementById('a-category'), ingredientCategories, 'No category');
+    setUnitOptions(document.getElementById('a-unit'), null, 'g');
+    addDialog.showModal();
+    document.getElementById('a-name').focus();
+}
+
+addForm.addEventListener('submit', function(event){
+    event.preventDefault();
+    addError.hidden = true;
+
+    var values = {
+        name: document.getElementById('a-name').value.trim(),
+        qty: document.getElementById('a-qty').value.trim(),
+        price: document.getElementById('a-price').value.trim(),
+        expiry: document.getElementById('a-expiry').value,
+        reorder: document.getElementById('a-reorder').value.trim()
+    };
+    var problem = validateNewIngredientForm(values);
+    if(problem != ""){
+        addError.textContent = problem;
+        addError.hidden = false;
+        return;
+    }
+
+    var data = {
+        name: values.name,
+        qty: values.qty,
+        unit: document.getElementById('a-unit').value,
+        price_paid: values.price
+    };
+    if(document.getElementById('a-category').value != ""){
+        data.category_id = document.getElementById('a-category').value;
+    }
+    if(values.expiry != ""){
+        data.expiry_date = values.expiry;
+    }
+    if(values.reorder != ""){
+        data.reorder_level = values.reorder;
+    }
+
+    var saveButton = document.getElementById('add-save');
+    saveButton.disabled = true;
+    createIngredient(data).then(function(reply){
+        saveButton.disabled = false;
+        if(reply.success){
+            addDialog.close();
+            showMessage(reply.message, true);
+            refreshInventory();
+        } else {
+            addError.textContent = reply.message;
+            addError.hidden = false;
+        }
+    });
+});
+
+document.getElementById('add-ingredient').addEventListener('click', openAdd);
+['add-cancel', 'add-cancel-2'].forEach(function(id){
+    document.getElementById(id).addEventListener('click', function(){
+        addDialog.close();
+    });
+});
