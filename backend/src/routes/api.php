@@ -1,7 +1,9 @@
 <?php
 // every request the frontend can make
 // format: 'module/action' => [http method, controller file, function, who can use it]
-// who can use it: public = anyone, login = any logged-in user, admin = administrators only
+// who can use it: public = anyone, login = any logged-in user (staff too), admin = the owner of the account only
+// staff can see everything, cook, restock, use stock and record waste. Changing recipes and ingredients is for the admin.
+// the full list of what staff may do is permissionsFor() in middlewares/role.php
 //
 // call it like this: backend/index.php?route=recipes/list
 // send data as a normal form post or as json, for GET routes use the url (?id=3)
@@ -37,20 +39,24 @@ $routes = [
     //   ingredients = [ {name, category_id, qty_needed, needed_unit, qty_bought, bought_unit, price_paid} ]
     //   qty_bought + price_paid are the purchase. They load the ingredient into the inventory.
     //   Leave them out for an ingredient that is already in the inventory.
-    'recipes/create' => ['POST', 'recipes.php', 'recipesCreate', 'login'],
+    'recipes/create' => ['POST', 'recipes.php', 'recipesCreate', 'admin'],
     // update: id + the same data as create. A purchase counts only the first time an
     //   ingredient is added to the recipe, so saving again never adds stock twice
-    'recipes/update' => ['POST', 'recipes.php', 'recipesUpdate', 'login'],
+    'recipes/update' => ['POST', 'recipes.php', 'recipesUpdate', 'admin'],
     // delete: id (the inventory is not changed)
-    'recipes/delete' => ['POST', 'recipes.php', 'recipesDelete', 'login'],
+    'recipes/delete' => ['POST', 'recipes.php', 'recipesDelete', 'admin'],
 
     // ---- inventory ----
     // list: search, category_id, status = low | out | expired | expiring | alert (all optional)
     'inventory/list' => ['GET', 'inventory.php', 'inventoryList', 'login'],
     // view: id (with its latest stock history)
     'inventory/view' => ['GET', 'inventory.php', 'inventoryView', 'login'],
+    // create: name, category_id (optional), qty, unit, price_paid, expiry_date (optional),
+    //   reorder_level (optional), reorder_unit (optional). A new ingredient comes with its first purchase,
+    //   that is how it gets its cost. Recipes only use ingredients that are already in the inventory.
+    'inventory/create' => ['POST', 'inventory.php', 'inventoryCreate', 'admin'],
     // update details: id, category_id, reorder_level, reorder_unit, expiry_date (YYYY-MM-DD, empty clears it)
-    'inventory/update' => ['POST', 'inventory.php', 'inventoryUpdate', 'login'],
+    'inventory/update' => ['POST', 'inventory.php', 'inventoryUpdate', 'admin'],
     // delete: id (only when no recipe uses it)
     'inventory/delete' => ['POST', 'inventory.php', 'inventoryDelete', 'admin'],
 
@@ -76,13 +82,22 @@ $routes = [
     // delete: id
     'categories/delete' => ['POST', 'categories.php', 'categoriesDelete', 'admin'],
 
-    // ---- users (administrator only, business accounts only for adding staff) ----
-    'users/list' => ['GET', 'users.php', 'usersList', 'admin'],
-    // create: full_name, username, password, role (admin or staff)
-    'users/create' => ['POST', 'users.php', 'usersCreate', 'admin'],
-    // update: id, full_name, username, role, password (optional, empty keeps the old one)
-    'users/update' => ['POST', 'users.php', 'usersUpdate', 'admin'],
+    // ---- staff (administrator only; only a business account can add staff) ----
+    // list: the staff of your account (+ can_add_staff, max_staff, staff_count)
+    'staff/list' => ['GET', 'staff.php', 'staffList', 'admin'],
+    // view: id (one staff member with the last 20 things they did)
+    'staff/view' => ['GET', 'staff.php', 'staffView', 'admin'],
+    // activity: user_id (optional), type, from, to, page, per_page (what staff did, from the stock history)
+    'staff/activity' => ['GET', 'staff.php', 'staffActivity', 'admin'],
+    // create: full_name, username, password (the role is always staff)
+    'staff/create' => ['POST', 'staff.php', 'staffCreate', 'admin'],
+    // update: id, full_name, username
+    'staff/update' => ['POST', 'staff.php', 'staffUpdate', 'admin'],
+    // password: id, new_password, confirm_password (optional). Sets a new password for that staff member
+    'staff/password' => ['POST', 'staff.php', 'staffPassword', 'admin'],
+    // status: id, active = 1 or 0. Turns the login on or off, the history is kept
+    'staff/status' => ['POST', 'staff.php', 'staffStatus', 'admin'],
     // delete: id
-    'users/delete' => ['POST', 'users.php', 'usersDelete', 'admin']
+    'staff/delete' => ['POST', 'staff.php', 'staffDelete', 'admin']
 ];
 ?>

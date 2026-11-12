@@ -41,6 +41,46 @@ function inventoryView($conn, $user){
     respond(true, 'OK', $data);
 }
 
+// a new ingredient with its first purchase (this is where an ingredient gets its cost)
+function inventoryCreate($conn, $user){
+
+    $account_id = (int)$user['account_id'];
+    $user_id = (int)$user['id'];
+    list($error, $data) = validateNewIngredient($_POST);
+    if($error){
+        respond(false, $error, null, 400);
+    }
+
+    if($data['category_id'] !== null){
+        $category = findCategory($conn, $data['category_id'], $account_id);
+        if(!$category || $category['type'] != 'ingredient'){
+            respond(false, 'The ingredient category does not exist.', null, 400);
+        }
+    }
+
+    $conn->beginTransaction();
+    try{
+        if(lockIngredientByName($conn, $data['name'], $account_id)){
+            throw new Exception($data['name'] . ' is already in your inventory. Use Restock to add more stock.');
+        }
+        $id = insertIngredient($conn, $account_id, $data['name'], $data['category_id'], $data['base_unit'], decimalString($data['reorder_base'], 3), null);
+        $ingredient = lockIngredient($conn, $id, $account_id);
+        addStockToIngredient($conn, $ingredient, $data['qty_base'], $data['price_paid'], $data['expiry_date'], 'First purchase', $user_id);
+        $conn->commit();
+    } catch(Throwable $e){
+        if($conn->inTransaction()){
+            $conn->rollBack();
+        }
+        // two requests with the same name at the same moment
+        if($e instanceof PDOException && $e->getCode() == '23000'){
+            respond(false, $data['name'] . ' is already in your inventory. Use Restock to add more stock.', null, 400);
+        }
+        throw $e;
+    }
+
+    respond(true, $data['name'] . ' was added to your inventory.', formatIngredient(findIngredientById($conn, $id, $account_id)), 201);
+}
+
 function inventoryUpdate($conn, $user){
 
     $account_id = (int)$user['account_id'];

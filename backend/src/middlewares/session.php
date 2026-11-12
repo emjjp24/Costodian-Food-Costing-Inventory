@@ -14,6 +14,13 @@ function requireLogin($conn){
         respond(false, 'Please login first.', null, 401);
     }
 
+    // the administrator turned this login off
+    if(!$user['is_active']){
+        $_SESSION = [];
+        session_destroy();
+        respond(false, 'This account is turned off. Please ask your administrator.', null, 401);
+    }
+
     return $user;
 }
 ?>

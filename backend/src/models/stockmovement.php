@@ -23,6 +23,11 @@ function movementFilter($filters, &$params){
         $where .= " AND m.ingredient_id = :ingredient_id";
         $params[':ingredient_id'] = $filters['ingredient_id'];
     }
+    // only the actions of one user (the staff page uses this)
+    if(isset($filters['user_id']) && $filters['user_id'] !== null){
+        $where .= " AND m.user_id = :user_id";
+        $params[':user_id'] = $filters['user_id'];
+    }
     if($filters['type'] != ""){
         $where .= " AND m.type = :type";
         $params[':type'] = $filters['type'];

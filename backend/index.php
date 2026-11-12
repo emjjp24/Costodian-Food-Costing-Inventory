@@ -5,6 +5,9 @@
 // days before an expiry date when the system starts to warn
 define('EXPIRY_WARNING_DAYS', 3);
 
+// the most staff accounts one business account can have
+define('MAX_STAFF_PER_ACCOUNT', 10);
+
 // dates (expiry, alerts) follow the local time
 date_default_timezone_set('Asia/Manila');
 

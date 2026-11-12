@@ -8,7 +8,9 @@ function userInfo($row){
         'role' => $row['role'],
         'account_id' => (int)$row['account_id'],
         'account_name' => $row['account_name'],
-        'account_type' => $row['account_type']
+        'account_type' => $row['account_type'],
+        // what this user may do (the frontend hides the buttons that are not allowed)
+        'permissions' => permissionsFor($row['role'], $row['account_type'])
     ];
 }
 
@@ -63,9 +65,15 @@ function authLogin($conn, $user){
             respond(false, 'Wrong username or password.', null, 401);
         }
 
+        // a staff login that the administrator turned off cannot sign in
+        if(!$found['is_active']){
+            respond(false, 'This account is turned off. Please ask your administrator.', null, 403);
+        }
+
         // a new session id after login stops session fixation
         session_regenerate_id(true);
         $_SESSION['userID'] = (int)$found['id'];
+        touchLastLogin($conn, (int)$found['id']);
 
         respond(true, 'Welcome, ' . $found['full_name'] . '!', userInfo(findUserById($conn, $found['id'])));
     }
