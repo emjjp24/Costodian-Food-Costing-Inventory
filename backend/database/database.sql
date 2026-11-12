@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,              -- password_hash()
     role ENUM('admin','staff') NOT NULL DEFAULT 'staff',
+    is_active TINYINT(1) NOT NULL DEFAULT 1,     -- 0 = turned off: cannot log in, history is kept
+    last_login_at DATETIME DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
@@ -80,6 +82,8 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients (
     recipe_id INT NOT NULL,
     ingredient_id INT NOT NULL,
     qty_needed DECIMAL(12,3) NOT NULL,           -- in base unit
+    bought_qty DECIMAL(12,3) DEFAULT NULL,       -- what was bought for this line (base unit), so it can be edited later
+    bought_price DECIMAL(12,2) DEFAULT NULL,     -- the price paid for bought_qty
     FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
     FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
