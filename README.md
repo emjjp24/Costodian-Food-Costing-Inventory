@@ -1,4 +1,4 @@
-# 🍽️ FoodCost — Food Costing & Inventory Management System
+# 🍽️ Costodian — Food Costing & Inventory Management System
 
 A free, web-based system for **personal use** and **small food businesses**. It combines **recipe costing** and **ingredient inventory** in one place. Ingredients entered while costing a dish are automatically added to the inventory, and every time ingredients are used, the stock is deducted automatically.
 
