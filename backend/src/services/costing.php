@@ -10,7 +10,8 @@ function weightedAverageCost($old_qty, $old_cost, $added_qty, $added_cost){
 
 // the costing of a recipe
 // selling_price is optional, when given the real food cost % and profit are added
-function computeCosting($ingredient_cost, $other_costs, $servings, $target_pct, $selling_price){
+// markup_pct is optional too (the owner's own markup on the cost), when given the price by markup is added
+function computeCosting($ingredient_cost, $other_costs, $servings, $target_pct, $selling_price, $markup_pct = null){
     $total = $ingredient_cost + $other_costs;
     $per_serving = $total / $servings;
     $suggested = $per_serving / ($target_pct / 100);
@@ -25,6 +26,20 @@ function computeCosting($ingredient_cost, $other_costs, $servings, $target_pct, 
         'suggested_price' => round($suggested, 2),
         'profit_per_serving' => round($suggested - $per_serving, 2)
     ];
+
+    // markup: the price is the cost plus that percent of the cost (25% markup on a 40 cost = 50)
+    $costing['markup_pct'] = null;
+    $costing['markup_price'] = null;
+    $costing['markup_profit_per_serving'] = null;
+    $costing['markup_food_cost_pct'] = null;
+    if($markup_pct !== null && $markup_pct > 0){
+        $markup_price = $per_serving * (1 + $markup_pct / 100);
+        $costing['markup_pct'] = round($markup_pct, 2);
+        $costing['markup_price'] = round($markup_price, 2);
+        $costing['markup_profit_per_serving'] = round($markup_price - $per_serving, 2);
+        // what share of that price goes to the cost (so it can be compared with the target)
+        $costing['markup_food_cost_pct'] = round(($per_serving / $markup_price) * 100, 2);
+    }
 
     if($selling_price !== null && $selling_price > 0){
         $costing['selling_price'] = round($selling_price, 2);
@@ -79,7 +94,7 @@ function recipeDetails($conn, $recipe, $selling_price){
         'created_at' => $recipe['created_at'],
         'ingredients' => $items,
         'can_cook_batches' => $max_batches === null ? 0 : $max_batches,
-        'costing' => computeCosting($ingredient_cost, (float)$recipe['other_costs'], (int)$recipe['servings'], (float)$recipe['target_food_cost_pct'], $selling_price)
+        'costing' => computeCosting($ingredient_cost, (float)$recipe['other_costs'], (int)$recipe['servings'], (float)$recipe['target_food_cost_pct'], $selling_price, isset($recipe['markup_pct']) ? (float)$recipe['markup_pct'] : null)
     ];
 }
 
@@ -103,15 +118,16 @@ function saveRecipe($conn, $recipe_id, $data, $user){
         $servings = $data['servings'];
         $other = decimalString($data['other_costs'], 2);
         $target = decimalString($data['target_pct'], 2);
+        $markup = $data['markup_pct'] !== null ? decimalString($data['markup_pct'], 2) : null;
 
         $linked = [];
         if($recipe_id === null){
-            $recipe_id = insertRecipe($conn, $account_id, $data['name'], $data['category_id'], $servings, $other, $target, $data['notes'], $user_id);
+            $recipe_id = insertRecipe($conn, $account_id, $data['name'], $data['category_id'], $servings, $other, $target, $markup, $data['notes'], $user_id);
         } else {
             if(!findRecipeById($conn, $recipe_id, $account_id)){
                 throw new Exception('Recipe not found.');
             }
-            updateRecipe($conn, $recipe_id, $account_id, $data['name'], $data['category_id'], $servings, $other, $target, $data['notes']);
+            updateRecipe($conn, $recipe_id, $account_id, $data['name'], $data['category_id'], $servings, $other, $target, $markup, $data['notes']);
             foreach(listRecipeIngredients($conn, $recipe_id) as $old){
                 $linked[(int)$old['ingredient_id']] = $old;
             }
@@ -193,4 +209,4 @@ function saveRecipe($conn, $recipe_id, $data, $user){
 
     return ['id' => $recipe_id, 'notes' => $notes];
 }
-?>  
+?>
