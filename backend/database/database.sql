@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS recipes (
     servings INT NOT NULL DEFAULT 1,
     other_costs DECIMAL(12,2) NOT NULL DEFAULT 0,          -- packaging, labor, gas per batch
     target_food_cost_pct DECIMAL(5,2) NOT NULL DEFAULT 35.00,
+    markup_pct DECIMAL(7,2) DEFAULT NULL,                  -- optional: the owner's own markup on the cost (25, 50, 33.5 ...)
     notes TEXT,
     created_by INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

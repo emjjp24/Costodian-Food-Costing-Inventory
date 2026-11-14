@@ -61,9 +61,9 @@ function recipeIngredientCosts($conn, $account_id){
     return $costs;
 }
 
-function insertRecipe($conn, $account_id, $name, $category_id, $servings, $other_costs, $target_pct, $notes, $user_id){
-    $sql = "INSERT INTO recipes (account_id, name, category_id, servings, other_costs, target_food_cost_pct, notes, created_by)
-            VALUES (:account_id, :name, :category_id, :servings, :other_costs, :target_pct, :notes, :created_by)";
+function insertRecipe($conn, $account_id, $name, $category_id, $servings, $other_costs, $target_pct, $markup_pct, $notes, $user_id){
+    $sql = "INSERT INTO recipes (account_id, name, category_id, servings, other_costs, target_food_cost_pct, markup_pct, notes, created_by)
+            VALUES (:account_id, :name, :category_id, :servings, :other_costs, :target_pct, :markup_pct, :notes, :created_by)";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':account_id', $account_id);
     $stmt->bindParam(':name', $name);
@@ -71,15 +71,16 @@ function insertRecipe($conn, $account_id, $name, $category_id, $servings, $other
     $stmt->bindParam(':servings', $servings);
     $stmt->bindParam(':other_costs', $other_costs);
     $stmt->bindParam(':target_pct', $target_pct);
+    $stmt->bindParam(':markup_pct', $markup_pct);
     $stmt->bindParam(':notes', $notes);
     $stmt->bindParam(':created_by', $user_id);
     $stmt->execute();
     return (int)$conn->lastInsertId();
 }
 
-function updateRecipe($conn, $id, $account_id, $name, $category_id, $servings, $other_costs, $target_pct, $notes){
+function updateRecipe($conn, $id, $account_id, $name, $category_id, $servings, $other_costs, $target_pct, $markup_pct, $notes){
     $sql = "UPDATE recipes SET name = :name, category_id = :category_id, servings = :servings,
-                   other_costs = :other_costs, target_food_cost_pct = :target_pct, notes = :notes
+                   other_costs = :other_costs, target_food_cost_pct = :target_pct, markup_pct = :markup_pct, notes = :notes
             WHERE id = :id AND account_id = :account_id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':name', $name);
@@ -87,6 +88,7 @@ function updateRecipe($conn, $id, $account_id, $name, $category_id, $servings, $
     $stmt->bindParam(':servings', $servings);
     $stmt->bindParam(':other_costs', $other_costs);
     $stmt->bindParam(':target_pct', $target_pct);
+    $stmt->bindParam(':markup_pct', $markup_pct);
     $stmt->bindParam(':notes', $notes);
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':account_id', $account_id);

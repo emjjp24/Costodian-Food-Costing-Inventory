@@ -121,6 +121,15 @@ function validateRecipe($post){
         }
     }
 
+    // the markup is optional: left empty it is not used. 25, 50, 75, 100 or the owner's own number such as 33
+    $markup = null;
+    if(isset($post['markup_pct']) && !isBlank($post['markup_pct'])){
+        $markup = parseAmount($post['markup_pct'], false);
+        if($markup === null || $markup > 1000){
+            return ['The markup must be more than 0 and not more than 1000 percent. Leave it empty if you do not use one.', null];
+        }
+    }
+
     $notes = "";
     if(isset($post['notes']) && is_string($post['notes'])){
         $notes = trim($post['notes']);
@@ -159,6 +168,7 @@ function validateRecipe($post){
         'servings' => $servings,
         'other_costs' => $other_costs,
         'target_pct' => $target,
+        'markup_pct' => $markup,
         'notes' => $notes,
         'lines' => $lines
     ]];

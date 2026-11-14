@@ -35,7 +35,7 @@ $routes = [
     'recipes/list' => ['GET', 'recipes.php', 'recipesList', 'login'],
     // view: id, selling_price (optional, to see the food cost % of your own price)
     'recipes/view' => ['GET', 'recipes.php', 'recipesView', 'login'],
-    // create: name, category_id, servings, other_costs, target_food_cost_pct, notes,
+    // create: name, category_id, servings, other_costs, target_food_cost_pct, markup_pct (optional), notes,
     //   ingredients = [ {name, category_id, qty_needed, needed_unit, qty_bought, bought_unit, price_paid} ]
     //   qty_bought + price_paid are the purchase. They load the ingredient into the inventory.
     //   Leave them out for an ingredient that is already in the inventory.

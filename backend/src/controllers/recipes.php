@@ -17,7 +17,7 @@ function recipesList($conn, $user){
             'name' => $row['name'],
             'category_id' => $row['category_id'] !== null ? (int)$row['category_id'] : null,
             'category_name' => $row['category_name'],
-            'costing' => computeCosting($ingredient_cost, (float)$row['other_costs'], (int)$row['servings'], (float)$row['target_food_cost_pct'], null)
+            'costing' => computeCosting($ingredient_cost, (float)$row['other_costs'], (int)$row['servings'], (float)$row['target_food_cost_pct'], null, isset($row['markup_pct']) ? (float)$row['markup_pct'] : null)
         ];
     }
     respond(true, 'OK', $items);
