@@ -159,6 +159,7 @@ function readForm(){
         servings: document.getElementById('f-servings').value.trim(),
         other_costs: document.getElementById('f-other').value.trim(),
         target: document.getElementById('f-target').value.trim(),
+        markup: document.getElementById('f-markup').value.trim(),
         notes: document.getElementById('f-notes').value.trim(),
         lines: []
     };
@@ -196,6 +197,10 @@ function buildPayload(values){
     if(values.target != ""){
         data.target_food_cost_pct = values.target;
     }
+    // an empty markup is not sent, so the recipe has no markup
+    if(values.markup != ""){
+        data.markup_pct = values.markup;
+    }
     data.notes = values.notes;
 
     values.lines.forEach(function(line){
@@ -216,6 +221,35 @@ function buildPayload(values){
     return data;
 }
 
+// ---------- the markup: quick picks and a box for the owner's own number ----------
+
+var markupBox = document.getElementById('f-markup');
+var markupPicks = document.querySelectorAll('#markup-picks .pick');
+
+// the pick that matches what is typed gets highlighted (33 matches none)
+function markFilledPick(){
+    var typed = markupBox.value.trim();
+    markupPicks.forEach(function(button){
+        var same = typed != "" && parseFloat(typed) == parseFloat(button.getAttribute('data-markup')) && isMoney(typed);
+        button.classList.toggle('on', same);
+        button.setAttribute('aria-pressed', same ? 'true' : 'false');
+    });
+}
+
+markupPicks.forEach(function(button){
+    button.addEventListener('click', function(){
+        // pressing the one that is already chosen clears it
+        if(button.classList.contains('on')){
+            markupBox.value = '';
+        } else {
+            markupBox.value = button.getAttribute('data-markup');
+        }
+        markFilledPick();
+    });
+});
+
+markupBox.addEventListener('input', markFilledPick);
+
 // opens the window: with an id it edits that recipe, without it adds a new one
 function openForm(id){
     editingId = id;
@@ -229,6 +263,7 @@ function openForm(id){
         formTitle.textContent = 'Add Recipe';
         document.getElementById('f-servings').value = '1';
         document.getElementById('f-target').value = '35';
+        markFilledPick();
         addIngredientRow(null);
         formDialog.showModal();
         document.getElementById('f-name').focus();
@@ -249,6 +284,8 @@ function openForm(id){
         document.getElementById('f-servings').value = data.costing.servings;
         document.getElementById('f-other').value = data.costing.other_costs;
         document.getElementById('f-target').value = data.costing.target_food_cost_pct;
+        document.getElementById('f-markup').value = data.costing.markup_pct !== null ? data.costing.markup_pct : '';
+        markFilledPick();
         document.getElementById('f-notes').value = data.notes ? data.notes : '';
         data.ingredients.forEach(function(line){
             addIngredientRow(line);

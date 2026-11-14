@@ -106,7 +106,9 @@ function drawView(data, note, price){
     var stats = h('div', 'stat-boxes');
     stats.appendChild(statBox('Total cost', money(costing.total_cost), false));
     stats.appendChild(statBox('Cost per serving', money(costing.cost_per_serving), false));
-    stats.appendChild(statBox('Suggested price', money(costing.suggested_price), true));
+    // with a markup chosen, the suggested price is the price with that markup
+    var suggestedLabel = costing.price_basis == 'markup' ? 'Suggested price (' + costing.markup_pct + '% markup)' : 'Suggested price';
+    stats.appendChild(statBox(suggestedLabel, money(costing.suggested_price), true));
     stats.appendChild(statBox('Profit per serving', money(costing.profit_per_serving), false));
     body.appendChild(stats);
 
@@ -144,6 +146,12 @@ function drawView(data, note, price){
     rows.appendChild(costRow('Other costs (packaging, gas, labor)', money(costing.other_costs)));
     rows.appendChild(costRow('Total cost of the whole recipe', money(costing.total_cost)));
     rows.appendChild(costRow('Target food cost', costing.target_food_cost_pct + '%'));
+    // the owner's own markup (only when the recipe has one): the suggested price above already follows it
+    if(costing.price_basis == 'markup'){
+        rows.appendChild(costRow('Markup', costing.markup_pct + '%'));
+        rows.appendChild(costRow('Price if only the target food cost is used', money(costing.target_price)));
+        rows.appendChild(costRow('Food cost at the suggested price', costing.markup_food_cost_pct + '%'));
+    }
     body.appendChild(rows);
 
     // check your own selling price

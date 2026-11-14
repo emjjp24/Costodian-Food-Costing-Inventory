@@ -14,7 +14,11 @@ function weightedAverageCost($old_qty, $old_cost, $added_qty, $added_cost){
 function computeCosting($ingredient_cost, $other_costs, $servings, $target_pct, $selling_price, $markup_pct = null){
     $total = $ingredient_cost + $other_costs;
     $per_serving = $total / $servings;
-    $suggested = $per_serving / ($target_pct / 100);
+    // the price that comes from the target food cost %
+    $target_price = $per_serving / ($target_pct / 100);
+    // when the owner chose a markup, the suggested price follows the markup instead
+    $uses_markup = ($markup_pct !== null && $markup_pct > 0);
+    $suggested = $uses_markup ? $per_serving * (1 + $markup_pct / 100) : $target_price;
 
     $costing = [
         'ingredient_cost' => round($ingredient_cost, 2),
@@ -24,7 +28,9 @@ function computeCosting($ingredient_cost, $other_costs, $servings, $target_pct, 
         'cost_per_serving' => round($per_serving, 2),
         'target_food_cost_pct' => round($target_pct, 2),
         'suggested_price' => round($suggested, 2),
-        'profit_per_serving' => round($suggested - $per_serving, 2)
+        'profit_per_serving' => round($suggested - $per_serving, 2),
+        'price_basis' => $uses_markup ? 'markup' : 'target',
+        'target_price' => round($target_price, 2)
     ];
 
     // markup: the price is the cost plus that percent of the cost (25% markup on a 40 cost = 50)
@@ -32,13 +38,12 @@ function computeCosting($ingredient_cost, $other_costs, $servings, $target_pct, 
     $costing['markup_price'] = null;
     $costing['markup_profit_per_serving'] = null;
     $costing['markup_food_cost_pct'] = null;
-    if($markup_pct !== null && $markup_pct > 0){
-        $markup_price = $per_serving * (1 + $markup_pct / 100);
+    if($uses_markup){
         $costing['markup_pct'] = round($markup_pct, 2);
-        $costing['markup_price'] = round($markup_price, 2);
-        $costing['markup_profit_per_serving'] = round($markup_price - $per_serving, 2);
+        $costing['markup_price'] = round($suggested, 2);
+        $costing['markup_profit_per_serving'] = round($suggested - $per_serving, 2);
         // what share of that price goes to the cost (so it can be compared with the target)
-        $costing['markup_food_cost_pct'] = round(($per_serving / $markup_price) * 100, 2);
+        $costing['markup_food_cost_pct'] = round(($per_serving / $suggested) * 100, 2);
     }
 
     if($selling_price !== null && $selling_price > 0){

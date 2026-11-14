@@ -37,6 +37,11 @@ function validateRecipeForm(values){
             return 'The target food cost must be more than 0 and not more than 100 percent.';
         }
     }
+    if(values.markup != ""){
+        if(!isMoney(values.markup) || parseFloat(values.markup) <= 0 || parseFloat(values.markup) > 1000){
+            return 'The markup must be more than 0 and not more than 1000 percent. Leave it empty if you do not use one.';
+        }
+    }
     if(values.lines.length == 0){
         return 'Please add at least one ingredient.';
     }
