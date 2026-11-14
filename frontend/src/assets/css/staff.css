@@ -1,0 +1,160 @@
+/* the staff page: three number cards, the team table and a few small pieces.
+   the buttons, windows and form fields come from recipes.css, the table from tables.css */
+
+.visually-hidden{
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.staff-table .row-actions{
+    text-align: right;
+}
+
+.staff-table .row-actions .btn{
+    margin: 2px 0 2px 6px;
+}
+
+/* a row can be tapped to see what that person did */
+.staff-row{
+    cursor: pointer;
+}
+
+.staff-row:hover td{
+    background: var(--soft);
+}
+
+.staff-row:focus-visible{
+    outline: 3px solid var(--ring);
+    outline-offset: -3px;
+}
+
+.dialog-small{
+    width: min(460px, calc(100vw - 24px));
+}
+
+.dialog-head .hint{
+    margin: 4px 0 0;
+}
+
+/* the password boxes look like the text boxes */
+.dialog input[type="password"]{
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.dialog input[type="password"]:focus{
+    outline: 3px solid var(--ring);
+    border-color: var(--accent-1);
+}
+
+#password-field[hidden]{
+    display: none;
+}
+
+.confirm-text{
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.empty-note{
+    margin: 0;
+    padding: 18px 0;
+    text-align: center;
+    color: var(--muted);
+}
+
+.mini-table .tag{
+    min-width: 0;
+    padding: 2px 10px;
+}
+
+@media (max-width: 700px){
+    .title-actions{
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    .title-actions .btn{
+        flex: 1 1 100%;
+    }
+
+    /* the three number cards: small, in one row */
+    .staff-stats{
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+    .staff-stats .stat{
+        display: block;
+        padding: 8px 12px;
+        border-radius: 12px;
+    }
+    .staff-stats .stat-number{
+        font-size: 22px;
+    }
+    .staff-stats .stat-label{
+        font-size: 12px;
+    }
+
+    /* every person becomes a short block instead of a table row */
+    .staff-table thead{
+        display: none;
+    }
+    .staff-table,
+    .staff-table tbody,
+    .staff-table tr,
+    .staff-table td{
+        display: block;
+        width: 100%;
+    }
+    .staff-table tr{
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+    }
+    .staff-table tbody tr:last-child{
+        border-bottom: 0;
+    }
+    .staff-table td{
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 4px 6px;
+        border: 0;
+    }
+    .staff-table td[data-label]::before{
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 13px;
+    }
+    .staff-table td.item{
+        display: block;
+    }
+    .staff-table td.item::before{
+        content: none;
+    }
+    .staff-table td.row-actions{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        padding-top: 8px;
+    }
+    .staff-table td.row-actions .btn{
+        margin: 0;
+    }
+    .staff-table td.empty{
+        display: block;
+    }
+}
