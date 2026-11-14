@@ -15,13 +15,13 @@
             // private mode: the panel just starts open
         }
     </script>
-    <script src="../assets/js/staff-link.js"></script>
     <link rel="stylesheet" href="../assets/css/variables.css">
     <link rel="stylesheet" href="../assets/css/base.css">
     <link rel="stylesheet" href="../assets/css/components.css">
     <link rel="stylesheet" href="../assets/css/sidebar.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
     <link rel="stylesheet" href="../assets/css/recipes.css">
+    <link rel="stylesheet" href="../assets/css/markup.css">
 </head>
 <body>
 
@@ -176,10 +176,23 @@
                     <label class="field">Target food cost (%)
                         <input type="text" id="f-target" inputmode="decimal" value="35">
                     </label>
+
+                    <!-- the owner's own markup on the cost: pick one or type any number -->
+                    <div class="field span-2" id="markup-field">
+                        <label for="f-markup">Markup (%) <span class="optional">optional</span></label>
+                        <div class="markup-picks" id="markup-picks" role="group" aria-label="Quick markup choices">
+                            <button type="button" class="pick" data-markup="25">25%</button>
+                            <button type="button" class="pick" data-markup="50">50%</button>
+                            <button type="button" class="pick" data-markup="75">75%</button>
+                            <button type="button" class="pick" data-markup="100">100%</button>
+                        </div>
+                        <input type="text" id="f-markup" inputmode="decimal" placeholder="or type your own, e.g. 33" autocomplete="off">
+                        <p class="hint">Price = cost per serving + this % of the cost. Leave it empty if you do not use a markup.</p>
+                    </div>
                 </div>
 
                 <h3 class="section-title">Ingredients</h3>
-                <p class="hint">Type the amount the way you measure: 2, 0.5, 1/2 or 1 1/2. Ingredients you type here are added to your inventory.</p>
+                <p class="hint">Type the quantity the way you measure: 2, 0.5, 1/2 or 1 1/2. Ingredients you type here are added to your inventory.</p>
                 <div id="ingredient-rows"></div>
                 <datalist id="ingredient-names"></datalist>
                 <button type="button" class="btn btn-line btn-sm" id="add-ingredient">+ Add ingredient</button>

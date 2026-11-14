@@ -1,0 +1,51 @@
+/* the markup choice in the add / edit recipe window (25, 50, 75, 100 or your own number) */
+
+#markup-field > label{
+    display: block;
+    margin-bottom: 6px;
+}
+
+#markup-field .optional{
+    margin-left: 4px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.markup-picks{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.markup-picks .pick{
+    padding: 7px 16px;
+    border: 1.5px solid var(--accent-1);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--accent-text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.markup-picks .pick:hover{
+    background: var(--soft);
+}
+
+.markup-picks .pick.on{
+    border-color: transparent;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    color: #3b1d14;
+}
+
+.markup-picks .pick:focus-visible{
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+}
+
+#markup-field .hint{
+    margin: 6px 0 0;
+}
