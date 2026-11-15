@@ -145,12 +145,11 @@ function drawView(data, note, price){
     rows.appendChild(costRow('Ingredients', money(costing.ingredient_cost)));
     rows.appendChild(costRow('Other costs (packaging, gas, labor)', money(costing.other_costs)));
     rows.appendChild(costRow('Total cost of the whole recipe', money(costing.total_cost)));
-    rows.appendChild(costRow('Target food cost', costing.target_food_cost_pct + '%'));
-    // the owner's own markup (only when the recipe has one): the suggested price above already follows it
+    // the price comes from the owner's markup when the recipe has one, if not from the target food cost
     if(costing.price_basis == 'markup'){
         rows.appendChild(costRow('Markup', costing.markup_pct + '%'));
-        rows.appendChild(costRow('Price if only the target food cost is used', money(costing.target_price)));
-        rows.appendChild(costRow('Food cost at the suggested price', costing.markup_food_cost_pct + '%'));
+    } else {
+        rows.appendChild(costRow('Target food cost', costing.target_food_cost_pct + '%'));
     }
     body.appendChild(rows);
 
@@ -176,8 +175,14 @@ function drawView(data, note, price){
     var priceResult = h('p', 'result-line');
     priceResult.id = 'price-result';
     if(costing.selling_price){
-        var over = costing.food_cost_pct > costing.target_food_cost_pct;
-        priceResult.textContent = 'At ' + money(costing.selling_price) + ', ingredients are ' + costing.food_cost_pct + '% of the price and you earn ' + money(costing.selling_profit_per_serving) + ' per serving.' + (over ? ' That is higher than your target of ' + costing.target_food_cost_pct + '%.' : ' That is within your target of ' + costing.target_food_cost_pct + '%.');
+        if(costing.price_basis == 'markup'){
+            // with a markup there is no target: show how much markup that price really gives
+            var gotMarkup = Math.round((costing.selling_price - costing.cost_per_serving) / costing.cost_per_serving * 10000) / 100;
+            priceResult.textContent = 'At ' + money(costing.selling_price) + ' you earn ' + money(costing.selling_profit_per_serving) + ' per serving, which is a ' + gotMarkup + '% markup on your cost. Your chosen markup is ' + costing.markup_pct + '%.';
+        } else {
+            var over = costing.food_cost_pct > costing.target_food_cost_pct;
+            priceResult.textContent = 'At ' + money(costing.selling_price) + ', ingredients are ' + costing.food_cost_pct + '% of the price and you earn ' + money(costing.selling_profit_per_serving) + ' per serving.' + (over ? ' That is higher than your target of ' + costing.target_food_cost_pct + '%.' : ' That is within your target of ' + costing.target_food_cost_pct + '%.');
+        }
     }
     body.appendChild(priceResult);
 
