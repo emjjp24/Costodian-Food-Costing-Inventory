@@ -49,3 +49,182 @@
 #markup-field .hint{
     margin: 6px 0 0;
 }
+
+/* the markup is ONE box with a small arrow that opens the choices 25 / 50 / 75 / 100 */
+
+.markup-combo{
+    position: relative;
+}
+
+.markup-combo input{
+    padding-right: 42px;
+}
+
+.combo-toggle{
+    position: absolute;
+    top: 4px;
+    right: 0;
+    width: 40px;
+    height: 38px;
+    border: 0;
+    border-radius: 0 8px 8px 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.combo-toggle:hover{
+    color: var(--accent-text);
+}
+
+.combo-toggle:focus-visible{
+    outline: 3px solid var(--ring);
+}
+
+.combo-list{
+    position: absolute;
+    top: 46px;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    margin: 0;
+    padding: 4px;
+    list-style: none;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+}
+
+.combo-list[hidden]{
+    display: none;
+}
+
+.combo-list button{
+    display: block;
+    width: 100%;
+    padding: 9px 11px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.combo-list button:hover,
+.combo-list button:focus-visible{
+    background: var(--soft);
+    outline: none;
+}
+
+.combo-list button.on{
+    color: var(--accent-text);
+    font-weight: 700;
+}
+
+/* the little "?" next to the target food cost and its explanation */
+.help-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-left: 6px;
+    padding: 0;
+    border: 1.5px solid var(--accent-1);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--accent-text);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.help-btn:hover,
+.help-btn[aria-expanded="true"]{
+    border-color: transparent;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    color: #3b1d14;
+}
+
+.help-btn:focus-visible{
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+}
+
+.help-box{
+    position: absolute;
+    top: 30px;
+    left: 0;
+    z-index: 20;
+    width: min(360px, 100%);
+    padding: 14px 16px 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+/* a little arrow that points to the "?" */
+.help-box::before{
+    content: "";
+    position: absolute;
+    top: -7px;
+    left: 100px;
+    width: 12px;
+    height: 12px;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+    background: var(--card);
+    transform: rotate(45deg);
+}
+
+.help-close{
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--muted);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.help-close:hover{
+    background: var(--soft);
+    color: var(--text);
+}
+
+.help-box p:first-of-type{
+    padding-right: 22px;
+}
+
+.help-box[hidden]{
+    display: none;
+}
+
+.help-box p{
+    margin: 0 0 6px;
+}
+
+.help-box p:last-child{
+    margin-bottom: 0;
+}
+
+.help-box .help-note{
+    color: var(--accent-text);
+}

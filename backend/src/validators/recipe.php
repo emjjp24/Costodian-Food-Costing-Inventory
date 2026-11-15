@@ -123,7 +123,9 @@ function validateRecipe($post){
 
     // the markup is optional: left empty it is not used. 25, 50, 75, 100 or the owner's own number such as 33
     $markup = null;
-    if(isset($post['markup_pct']) && !isBlank($post['markup_pct'])){
+    // typing 0 means the same as no markup
+    $typed_zero = isset($post['markup_pct']) && is_scalar($post['markup_pct']) && is_numeric(trim((string)$post['markup_pct'])) && (float)trim((string)$post['markup_pct']) == 0;
+    if(isset($post['markup_pct']) && !isBlank($post['markup_pct']) && !$typed_zero){
         $markup = parseAmount($post['markup_pct'], false);
         if($markup === null || $markup > 1000){
             return ['The markup must be more than 0 and not more than 1000 percent. Leave it empty if you do not use one.', null];
