@@ -24,6 +24,7 @@
     <!-- recipes.css has the buttons, windows and form fields that this page shares -->
     <link rel="stylesheet" href="../assets/css/recipes.css">
     <link rel="stylesheet" href="../assets/css/staff.css">
+<script>try{if(localStorage.getItem('costodian-can-manage-staff')=='1'){document.write('<style id="staff-link-early">#staff-link{display:flex !important}</style>');}}catch(e){}</script>
 </head>
 <body>
 
@@ -124,6 +125,7 @@
             <div class="title-row">
                 <div>
                     <h1 class="page-title">Staff</h1>
+                    <p class="page-sub">Give your helpers their own login. They see your recipes and inventory, but only you can change them.</p>
                 </div>
                 <div class="title-actions">
                     <button type="button" class="btn btn-fill" id="add-staff">+ Add Staff</button>
@@ -261,6 +263,7 @@
 
     <script src="../api/client.js"></script>
     <script src="../api/auth.js"></script>
+    <script src="../assets/js/staff-link.js"></script>
     <script src="../api/dashboard.js"></script>
     <script src="../api/staff.js"></script>
     <script src="../assets/js/shell.js"></script>
