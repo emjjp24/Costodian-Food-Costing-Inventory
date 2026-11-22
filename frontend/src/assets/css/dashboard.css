@@ -215,8 +215,13 @@
 
 .page-sub{
     margin: 0 0 20px;
-    color: var(--muted);
+    color: #3f4551;
     font-size: 15px;
+    font-weight: 450;
+}
+
+:root[data-theme="dark"] .page-sub{
+    color: #d3dae6;
 }
 
 /* ---------- number cards ---------- */
