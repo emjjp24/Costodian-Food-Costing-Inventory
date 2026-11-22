@@ -1,0 +1,66 @@
+/* the bell list: clickable items, "Mark as read" and the personal account profile */
+
+/* a personal account has no role under the name */
+html.personal-account #user-role{
+    display: none;
+}
+
+.notif-tools{
+    display: flex;
+    justify-content: flex-end;
+    margin: -4px 8px 6px;
+}
+
+.notif-link{
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent-text);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.notif-link:hover{
+    text-decoration: underline;
+}
+
+.notif-link:disabled{
+    opacity: 0.55;
+    cursor: default;
+}
+
+.notif-link:disabled:hover{
+    text-decoration: none;
+}
+
+.notif-link:focus-visible{
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.notif-item{
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.notif-item:focus-visible{
+    outline: 3px solid var(--ring);
+    outline-offset: -3px;
+}
+
+.notif-text{
+    min-width: 0;
+}
+
+.notif-name{
+    font-weight: 600;
+}
+
+/* what was already read is dimmer */
+.notif-item.is-read{
+    opacity: 0.6;
+}
