@@ -1,0 +1,44 @@
+/* the order calculator in the recipe window */
+.order-calc{
+    margin-top: 8px;
+}
+
+.order-result{
+    margin-top: 12px;
+}
+
+.order-result .stat-boxes{
+    margin-bottom: 10px;
+}
+
+.order-result .table-wrap{
+    margin-top: 8px;
+}
+
+.order-ok{
+    color: var(--ok-text);
+}
+
+.order-short{
+    color: var(--error-text);
+}
+
+/* the title row: the title, the "?" button and its pop-up (the button and pop-up look come from markup.css) */
+.order-title{
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 20px 0 8px;
+}
+
+.order-title .section-title{
+    margin: 0;
+}
+
+.order-title .help-box{
+    top: 32px;
+}
+
+.order-title .help-box::before{
+    left: 128px;
+}

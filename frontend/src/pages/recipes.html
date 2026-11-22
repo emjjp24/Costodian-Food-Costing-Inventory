@@ -15,8 +15,6 @@
             // private mode: the panel just starts open
         }
     </script>
-    <script src="../assets/js/staff-link.js"></script>
-    <script src="../assets/js/markup-select.js"></script>
     <link rel="stylesheet" href="../assets/css/variables.css">
     <link rel="stylesheet" href="../assets/css/base.css">
     <link rel="stylesheet" href="../assets/css/components.css">
@@ -24,6 +22,8 @@
     <link rel="stylesheet" href="../assets/css/dashboard.css">
     <link rel="stylesheet" href="../assets/css/recipes.css">
     <link rel="stylesheet" href="../assets/css/markup.css">
+    <link rel="stylesheet" href="../assets/css/order-calc.css">
+<script>try{if((localStorage.getItem('costodian-can-manage-staff')=='1'||localStorage.getItem('costodian-can-manage-staff')=='true')){document.write('<style id="staff-link-early">#staff-link{display:flex !important}</style>');}}catch(e){}</script>
 </head>
 <body>
 
@@ -56,6 +56,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3l4 4-4 4M21 7H8M7 21l-4-4 4-4M3 17h13"/></svg>
                 Movements
             </a>
+            <a class="side-link" id="staff-link" href="staff.html" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Staff</a>
         </nav>
 
         <!-- the settings button at the bottom of the panel -->
@@ -213,13 +214,16 @@
 
     <script src="../api/client.js"></script>
     <script src="../api/auth.js"></script>
+    <script src="../assets/js/staff-link.js"></script>
     <script src="../api/dashboard.js"></script>
     <script src="../api/recipes.js"></script>
     <script src="../validators/recipe.js"></script>
     <script src="../assets/js/shell.js"></script>
     <script src="../assets/js/recipes-helpers.js"></script>
     <script src="../assets/js/recipes-draw.js"></script>
+    <script src="../assets/js/order-calc.js"></script>
     <script src="../assets/js/recipes-form.js"></script>
+    <script src="../assets/js/markup-select.js"></script>
     <script src="../assets/js/recipes-page.js"></script>
 </body>
 </html>
