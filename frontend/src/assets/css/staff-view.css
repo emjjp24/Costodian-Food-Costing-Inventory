@@ -1,0 +1,5 @@
+/* what only an administrator may use is hidden for staff */
+html.staff-view #add-recipe,
+html.staff-view #add-ingredient{
+    display: none !important;
+}

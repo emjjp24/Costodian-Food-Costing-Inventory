@@ -54,6 +54,15 @@ function computeCosting($ingredient_cost, $other_costs, $servings, $target_pct, 
     return $costing;
 }
 
+// what a staff member may see of a recipe: the price per serving, not what it costs or what the business earns
+function staffCosting($costing){
+    return [
+        'staff_view' => true,
+        'servings' => $costing['servings'],
+        'price_per_serving' => $costing['suggested_price']
+    ];
+}
+
 // the recipe with its ingredient lines, costing and how many batches the stock can make
 function recipeDetails($conn, $recipe, $selling_price){
     $lines = listRecipeIngredients($conn, $recipe['id']);
