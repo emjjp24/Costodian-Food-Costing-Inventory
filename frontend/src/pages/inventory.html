@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory | Costodian</title>
+    <script>if(/(?:^|&)app-embed=1(?:&|$)/.test(window.location.search.slice(1))){document.documentElement.classList.add('app-embedded');}</script>
     <script src="../assets/js/theme.js"></script>
     <script>
         // the panel was closed last time: keep it closed (this runs before the page is drawn)
@@ -20,6 +21,7 @@
     <link rel="stylesheet" href="../assets/css/components.css">
     <link rel="stylesheet" href="../assets/css/sidebar.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/app-navigation.css">
     <link rel="stylesheet" href="../assets/css/tables.css">
     <!-- recipes.css has the buttons, windows and form fields that this page shares -->
     <link rel="stylesheet" href="../assets/css/recipes.css">
@@ -122,7 +124,8 @@
         <main class="content">
             <div class="title-row">
                 <div>
-                    <h1 class="page-title">Inventory</h1>  
+                    <h1 class="page-title">Inventory</h1>
+                    <p class="page-sub">Your ingredients, how much is left and what needs attention.</p>
                 </div>
                 <div class="title-actions">
                     <label class="visually-hidden" for="status-filter">Filter by status</label>
@@ -300,5 +303,7 @@
     <script src="../assets/js/inventory-waste.js"></script>
     <script src="../assets/js/inventory-forms.js"></script>
     <script src="../assets/js/inventory-page.js"></script>
+<script src="../assets/js/notif-center.js"></script>
+    <script src="../assets/js/page-router.js"></script>
 </body>
 </html>
