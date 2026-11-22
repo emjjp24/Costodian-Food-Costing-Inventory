@@ -12,12 +12,16 @@ function recipesList($conn, $user){
     $items = [];
     foreach(listRecipes($conn, $account_id, $search, $category_id) as $row){
         $ingredient_cost = isset($costs[(int)$row['id']]) ? $costs[(int)$row['id']] : 0;
+        $costing = computeCosting($ingredient_cost, (float)$row['other_costs'], (int)$row['servings'], (float)$row['target_food_cost_pct'], null, isset($row['markup_pct']) ? (float)$row['markup_pct'] : null);
+        if($user['role'] == 'staff'){
+            $costing = staffCosting($costing);
+        }
         $items[] = [
             'id' => (int)$row['id'],
             'name' => $row['name'],
             'category_id' => $row['category_id'] !== null ? (int)$row['category_id'] : null,
             'category_name' => $row['category_name'],
-            'costing' => computeCosting($ingredient_cost, (float)$row['other_costs'], (int)$row['servings'], (float)$row['target_food_cost_pct'], null, isset($row['markup_pct']) ? (float)$row['markup_pct'] : null)
+            'costing' => $costing
         ];
     }
     respond(true, 'OK', $items);
@@ -39,7 +43,15 @@ function recipesView($conn, $user){
         }
     }
 
-    respond(true, 'OK', recipeDetails($conn, $recipe, $selling_price));
+    $details = recipeDetails($conn, $recipe, $selling_price);
+    if($user['role'] == 'staff'){
+        // staff see the price per serving only: no costs, no profit, no purchase prices
+        $details['costing'] = staffCosting($details['costing']);
+        foreach($details['ingredients'] as $i => $line){
+            unset($details['ingredients'][$i]['unit_cost'], $details['ingredients'][$i]['line_cost'], $details['ingredients'][$i]['bought_qty_text'], $details['ingredients'][$i]['bought_price']);
+        }
+    }
+    respond(true, 'OK', $details);
 }
 
 function recipesCreate($conn, $user){
