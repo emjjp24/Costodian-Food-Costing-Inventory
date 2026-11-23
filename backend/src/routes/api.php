@@ -24,6 +24,8 @@ $routes = [
     'auth/logout' => ['POST', 'auth.php', 'authLogout', 'public'],
     // who is logged in (the frontend calls this when a page opens)
     'auth/me' => ['GET', 'auth.php', 'authMe', 'login'],
+    // change own profile: full_name, username, business_name (only the administrator of a business account)
+    'auth/profile' => ['POST', 'auth.php', 'authProfile', 'login'],
     // change own password: current_password, new_password, confirm_password
     'auth/password' => ['POST', 'auth.php', 'authPassword', 'login'],
 
