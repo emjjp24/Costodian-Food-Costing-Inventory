@@ -9,6 +9,8 @@ function userInfo($row){
         'account_id' => (int)$row['account_id'],
         'account_name' => $row['account_name'],
         'account_type' => $row['account_type'],
+        'created_at' => isset($row['created_at']) ? $row['created_at'] : null,
+        'last_login_at' => isset($row['last_login_at']) ? $row['last_login_at'] : null,
         // what this user may do (the frontend hides the buttons that are not allowed)
         'permissions' => permissionsFor($row['role'], $row['account_type'])
     ];
@@ -90,6 +92,40 @@ function authLogout($conn, $user){
 
 function authMe($conn, $user){
     respond(true, 'OK', userInfo($user));
+}
+
+// my profile: full_name, username, and business_name (only the administrator of a business account)
+function authProfile($conn, $user){
+
+    $is_business = $user['account_type'] == 'business';
+    $can_rename_business = $is_business && $user['role'] == 'admin';
+
+    list($error, $data) = validateProfile($_POST, $can_rename_business);
+    if($error){
+        respond(false, $error, null, 400);
+    }
+    if(usernameTaken($conn, $data['username'], (int)$user['id'])){
+        respond(false, 'That username is already taken.', null, 400);
+    }
+
+    try{
+        updateOwnProfile($conn, (int)$user['id'], $data['full_name'], $data['username']);
+    } catch(PDOException $e){
+        // two people picked the same username at the same moment
+        if($e->getCode() == '23000'){
+            respond(false, 'That username is already taken.', null, 400);
+        }
+        throw $e;
+    }
+
+    // the name of the account: the business name, or the person's own name for a personal account
+    if($can_rename_business){
+        updateAccountName($conn, (int)$user['account_id'], $data['business_name']);
+    } elseif(!$is_business){
+        updateAccountName($conn, (int)$user['account_id'], $data['full_name']);
+    }
+
+    respond(true, 'Your profile was saved.', userInfo(findUserById($conn, (int)$user['id'])));
 }
 
 function authPassword($conn, $user){

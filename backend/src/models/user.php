@@ -107,6 +107,16 @@ function touchLastLogin($conn, $id){
     $stmt->execute();
 }
 
+// a person changes their own name and username (the role and the account never change here)
+function updateOwnProfile($conn, $id, $full_name, $username){
+    $sql = "UPDATE users SET full_name = :full_name, username = :username WHERE id = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':full_name', $full_name);
+    $stmt->bindParam(':username', $username);
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
+}
+
 function updateUserPassword($conn, $id, $password_hash){
     $sql = "UPDATE users SET password = :password WHERE id = :id";
     $stmt = $conn->prepare($sql);
