@@ -2,7 +2,7 @@
 
 // filters (all optional): type, ingredient_id, from, to (YYYY-MM-DD), page
 function getMovements(filters){
-    var query = {per_page: 15};
+    var query = {per_page: 6};
     ['type', 'ingredient_id', 'from', 'to', 'page'].forEach(function(key){
         if(filters[key]){
             query[key] = filters[key];

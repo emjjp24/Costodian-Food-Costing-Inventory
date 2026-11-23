@@ -1,0 +1,75 @@
+/* the profile page: who you are, your details and your password.
+   the buttons and tags come from recipes.css, the white panels from tables.css */
+
+.profile-head{
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.avatar.avatar-big{
+    flex: none;
+    width: 72px;
+    height: 72px;
+    font-size: 26px;
+}
+
+.profile-who h2{
+    margin: 0 0 6px;
+    font-size: 22px;
+}
+
+.profile-chips{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.profile-since{
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.profile-panel{
+    margin-bottom: 20px;
+}
+
+.profile-actions{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 14px;
+}
+
+@media (max-width: 560px){
+    .profile-head{
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* the form fields (recipes.css only styles them inside its windows, so they are styled again here) */
+.profile-panel input[type="text"],
+.profile-panel input[type="password"]{
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.profile-panel input:focus{
+    outline: 3px solid var(--ring);
+    border-color: var(--accent-1);
+}
+
+.profile-panel .alert{
+    margin-bottom: 12px;
+}
