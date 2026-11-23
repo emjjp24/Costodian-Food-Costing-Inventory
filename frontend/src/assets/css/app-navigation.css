@@ -8,6 +8,10 @@
     overflow: hidden;
 }
 
+.main.app-tabs-open{
+    padding-bottom: 0;
+}
+
 .app-tabs iframe{
     display: none;
     width: 100%;

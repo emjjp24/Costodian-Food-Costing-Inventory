@@ -30,7 +30,7 @@
 
     function routeUrl(value){
         var url = new URL(value, window.location.href);
-        if(url.origin !== window.location.origin || !/\/pages\/(dashboard|inventory|recipes|movements|staff)\.html$/i.test(url.pathname)){
+        if(url.origin !== window.location.origin || !/\/pages\/(dashboard|inventory|recipes|movements|staff|profile)\.html$/i.test(url.pathname)){
             return null;
         }
         url.searchParams.delete('app-embed');
@@ -82,6 +82,7 @@
             activeFrame.classList.remove('active');
         }
         activeFrame = null;
+        main.classList.remove('app-tabs-open');
         hostContent.hidden = false;
         tabs.hidden = true;
         document.title = hostTitle;
@@ -124,6 +125,7 @@
 
     function activateFrame(frame, url){
         closeHostDialogs();
+        main.classList.add('app-tabs-open');
         hostContent.hidden = true;
         tabs.hidden = false;
         if(activeFrame){

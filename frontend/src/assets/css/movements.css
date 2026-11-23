@@ -1,5 +1,48 @@
 /* the movements page: filter bar, the table and the page buttons */
 
+.movement-layout{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom: 0;
+}
+
+.movement-layout > .topbar{
+    flex: none;
+}
+
+.movement-layout > .content{
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom: 24px;
+}
+
+.movement-layout .title-row,
+.movement-layout .filters,
+.movement-layout #page-message,
+.movement-layout .pager-row{
+    flex: none;
+}
+
+.movement-layout > .content > .panel{
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.movement-layout .table-wrap{
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+}
+
 .visually-hidden{
     position: absolute;
     width: 1px;

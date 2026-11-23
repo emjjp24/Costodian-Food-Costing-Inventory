@@ -125,27 +125,29 @@ function renderAlerts(alerts, userId){
     // the dot is only for unread alerts
     document.getElementById('notif-dot').hidden = unread.length == 0;
 
-    var tools = notifEl('div', 'notif-tools');
-    var allBtn = notifEl('button', 'notif-link', 'Mark all as read');
-    allBtn.type = 'button';
-    allBtn.disabled = unread.length == 0;
-    allBtn.addEventListener('click', function(event){
-        event.stopPropagation();
-        items.forEach(function(entry){
-            read[entry.key] = true;
-        });
-        saveReadAlerts(userId, read);
-        renderAlerts(alerts, userId);
-    });
-    tools.appendChild(allBtn);
-    menu.insertBefore(tools, list);
-
     if(items.length == 0){
         var none = document.createElement('li');
         none.className = 'notif-empty';
         none.textContent = 'Everything looks good.';
         list.appendChild(none);
         return;
+    }
+
+    // "Mark all as read"
+    if(unread.length > 0){
+        var tools = notifEl('div', 'notif-tools');
+        var allBtn = notifEl('button', 'notif-link', 'Mark all as read');
+        allBtn.type = 'button';
+        allBtn.addEventListener('click', function(event){
+            event.stopPropagation();
+            items.forEach(function(entry){
+                read[entry.key] = true;
+            });
+            saveReadAlerts(userId, read);
+            renderAlerts(alerts, userId);
+        });
+        tools.appendChild(allBtn);
+        menu.insertBefore(tools, list);
     }
 
     function addRow(entry, isRead){
@@ -238,24 +240,47 @@ apiPost = function(route, data){
     return apiPostWithoutBell(route, data).then(function(reply){
         if(reply.success && /^(stock|inventory|recipes)\//.test(route)){
             refreshAlerts();
-            if(window.parent !== window){
-                window.parent.postMessage({type: 'costodian-refresh-alerts'}, window.location.origin);
-            }
         }
         return reply;
     });
 };
 
 // and it is checked again when coming back to the tab, and once a minute
-if(!document.documentElement.classList.contains('app-embedded')){
-    document.addEventListener('visibilitychange', function(){
-        if(!document.hidden){
-            refreshAlerts();
+document.addEventListener('visibilitychange', function(){
+    if(!document.hidden){
+        refreshAlerts();
+    }
+});
+setInterval(function(){
+    if(!document.hidden){
+        refreshAlerts();
+    }
+}, 60000);
+
+// ---------- the name and picture in the top bar open "My Profile" ----------
+
+(function(){
+    var box = document.querySelector('.user');
+    if(!box){
+        return;
+    }
+    box.classList.add('user-link');
+    box.tabIndex = 0;
+    box.setAttribute('role', 'link');
+    box.setAttribute('aria-label', 'My profile');
+    box.title = 'My profile';
+    function openProfile(){
+        if(typeof window.navigateApp == 'function'){
+            window.navigateApp('profile.html');
+        } else {
+            window.location.href = 'profile.html';
+        }
+    }
+    box.addEventListener('click', openProfile);
+    box.addEventListener('keydown', function(event){
+        if(event.key == 'Enter' || event.key == ' '){
+            event.preventDefault();
+            openProfile();
         }
     });
-    setInterval(function(){
-        if(!document.hidden){
-            refreshAlerts();
-        }
-    }, 60000);
-}
+})();
