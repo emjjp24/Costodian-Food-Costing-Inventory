@@ -1,7 +1,7 @@
 -- FoodCost database
 -- How to use: open phpMyAdmin, choose Import, select this file and click Go.
 -- It is safe to run again: existing tables and data are kept.
--- Already have the database from before? Run add_profile_columns.sql once instead (it adds the new profile columns).
+-- Already have the database from before? Run add_profile_columns.sql and add_login_attempts.sql once instead (they add the new columns and table).
 -- NOTE: this version has accounts (sign up). If you imported the older version
 -- before, drop its tables first (phpMyAdmin > foodcost_db > select all tables > Drop)
 -- and then import this file.
@@ -34,6 +34,16 @@ CREATE TABLE IF NOT EXISTS users (
     last_login_at DATETIME DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- WRONG LOGIN ATTEMPTS (slows down password guessing: see LOGIN_MAX_FAILS in backend/index.php)
+CREATE TABLE IF NOT EXISTS login_attempts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,               -- what was typed, in small letters
+    ip VARCHAR(45) NOT NULL,
+    created_at DATETIME NOT NULL,
+    INDEX idx_attempts_username (username, created_at),
+    INDEX idx_attempts_ip (ip, created_at)
 ) ENGINE=InnoDB;
 
 -- CATEGORIES (used for both ingredients and recipes, every account has its own)

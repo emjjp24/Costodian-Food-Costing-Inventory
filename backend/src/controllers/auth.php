@@ -66,10 +66,26 @@ function authLogin($conn, $user){
             respond(false, $error, null, 400);
         }
 
+        // too many wrong passwords: wait before trying again (even a correct password waits)
+        $wait = loginLockMinutes($conn, $data['username']);
+        if($wait > 0){
+            respond(false, 'Too many wrong attempts. Please try again in ' . $wait . ($wait == 1 ? ' minute.' : ' minutes.'), null, 429);
+        }
+
         $found = findUserByUsername($conn, $data['username']);
         if(!$found || !password_verify($data['password'], $found['password'])){
-            respond(false, 'Wrong username or password.', null, 401);
+            $left = recordLoginFailure($conn, $data['username']);
+            $message = 'Wrong username or password.';
+            if($left === 0){
+                $message = 'Too many wrong attempts. Please try again in ' . LOGIN_LOCK_MINUTES . ' minutes.';
+                respond(false, $message, null, 429);
+            }
+            if($left !== null && $left <= 2){
+                $message .= ' ' . $left . ($left == 1 ? ' try' : ' tries') . ' left before a ' . LOGIN_LOCK_MINUTES . '-minute lock.';
+            }
+            respond(false, $message, null, 401);
         }
+        clearLoginFailures($conn, $data['username']);
 
         // a staff login that the administrator turned off cannot sign in
         if(!$found['is_active']){
