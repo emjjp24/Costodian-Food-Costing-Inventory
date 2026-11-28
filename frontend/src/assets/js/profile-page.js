@@ -195,8 +195,8 @@ passwordForm.addEventListener('submit', function(event){
         showFormError('password-error', 'Please fill in all the password fields.');
         return;
     }
-    if(newPass.length < 6 || newPass.length > 72){
-        showFormError('password-error', 'The new password must be 6 to 72 characters long.');
+    if(newPass.length < 8 || newPass.length > 72){
+        showFormError('password-error', 'The new password must be 8 to 72 characters long.');
         return;
     }
     if(newPass !== confirm){
