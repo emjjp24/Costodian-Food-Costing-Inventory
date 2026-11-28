@@ -7,6 +7,7 @@ var stockUnit = document.getElementById('s-unit');
 var stockPrice = document.getElementById('s-price');
 var stockExpiry = document.getElementById('s-expiry');
 var stockNote = document.getElementById('s-note');
+var stockWasteAll = document.getElementById('stock-waste-all');
 
 var stockKind = 'restock';
 var stockItem = null;
@@ -24,6 +25,8 @@ function openStock(kind, item){
     // the price and the expiry date are only for new stock you bought
     document.getElementById('restock-fields').hidden = (kind != 'restock');
     document.getElementById('s-note-label').textContent = kind == 'waste' ? 'Reason (optional)' : 'Note (optional)';
+    stockWasteAll.hidden = (kind != 'waste');
+    stockWasteAll.disabled = Number(item.stock_qty) <= 0;
 
     stockQty.value = '';
     stockPrice.value = '';
@@ -35,6 +38,31 @@ function openStock(kind, item){
     stockDialog.showModal();
     stockQty.focus();
 }
+
+stockWasteAll.addEventListener('click', function(){
+    if(!stockItem || stockKind != 'waste' || Number(stockItem.stock_qty) <= 0){
+        return;
+    }
+    if(!confirm('Record all ' + stockItem.stock_text + ' of ' + stockItem.name + ' as waste? This will leave 0 in stock.')){
+        return;
+    }
+
+    var reason = stockNote.value.trim();
+    stockWasteAll.disabled = true;
+    document.getElementById('stock-save').disabled = true;
+    wasteAllIngredient({ingredient_id: stockItem.id, reason: reason}).then(function(reply){
+        stockWasteAll.disabled = false;
+        document.getElementById('stock-save').disabled = false;
+        if(reply.success){
+            stockDialog.close();
+            showMessage(reply.message, true);
+            refreshInventory();
+        } else {
+            stockError.textContent = reply.message;
+            stockError.hidden = false;
+        }
+    });
+});
 
 stockForm.addEventListener('submit', function(event){
     event.preventDefault();

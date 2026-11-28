@@ -47,6 +47,18 @@ function validateWaste($post){
     return [null, $data];
 }
 
+function validateWasteAll($post){
+    $ingredient_id = requestId(isset($post['ingredient_id']) ? $post['ingredient_id'] : 0);
+    if($ingredient_id == 0){
+        return ['Please choose an ingredient.', null];
+    }
+    $reason = isset($post['reason']) ? cleanText($post['reason']) : "";
+    if(mb_strlen($reason) > 100){
+        return ['The reason must not be longer than 100 characters.', null];
+    }
+    return [null, ['ingredient_id' => $ingredient_id, 'reason' => $reason]];
+}
+
 function validateRestock($post){
     list($error, $data) = validateQuantityAndUnit($post);
     if($error){

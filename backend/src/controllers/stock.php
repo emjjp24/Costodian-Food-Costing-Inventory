@@ -16,6 +16,16 @@ function stockUse($conn, $user){
 function stockWaste($conn, $user){
 
     if(isset($_POST['ingredient_id'])){
+        if(isset($_POST['all']) && $_POST['all'] === true){
+            list($error, $data) = validateWasteAll($_POST);
+            if($error){
+                respond(false, $error, null, 400);
+            }
+            $reference = $data['reason'] != "" ? "Waste (all): " . $data['reason'] : "Waste (all)";
+            $result = removeStock($conn, $data['ingredient_id'], null, null, 'waste', $reference, $user, true);
+            respond(true, 'Recorded all ' . $result['removed'] . ' of ' . $result['ingredient'] . ' as waste. ' . $result['remaining'] . ' left.', $result);
+        }
+
         list($error, $data) = validateWaste($_POST);
         if($error){
             respond(false, $error, null, 400);

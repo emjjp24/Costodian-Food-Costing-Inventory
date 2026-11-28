@@ -1,4 +1,8 @@
 /* the "Record waste" button in the table rows is only for a computer screen, not for a phone */
+#stock-waste-all[hidden]{
+    display: none;
+}
+
 @media (max-width: 700px){
     .row-waste{
         display: none;
