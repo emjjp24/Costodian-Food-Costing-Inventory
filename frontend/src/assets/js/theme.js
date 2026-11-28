@@ -36,6 +36,25 @@
                 // private mode: it still works, it just is not remembered
             }
             refreshLabel();
+            // the pages opened as tabs live in frames: they get the new mode at once
+            document.querySelectorAll('iframe').forEach(function(frame){
+                try{
+                    frame.contentDocument.documentElement.setAttribute('data-theme', next);
+                } catch(e){
+                    // a frame that is not ready: it reads the saved choice when it loads
+                }
+            });
         });
+    });
+
+    // another open page or tab changed the mode: follow it (this is how a page inside a frame hears about it)
+    window.addEventListener('storage', function(event){
+        if(event.key == 'costodian-theme' && (event.newValue == 'light' || event.newValue == 'dark')){
+            document.documentElement.setAttribute('data-theme', event.newValue);
+            var button = document.getElementById('theme-toggle');
+            if(button){
+                button.setAttribute('aria-label', event.newValue == 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+            }
+        }
     });
 })();

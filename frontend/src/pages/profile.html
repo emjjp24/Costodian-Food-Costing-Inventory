@@ -120,7 +120,7 @@
             <div class="title-row">
                 <div>
                     <h1 class="page-title">My Profile</h1>
-                    <p class="page-sub">Change your name, your username and your password.</p>
+                    <p class="page-sub">Change your details, your password, or delete your account.</p>
                 </div>
             </div>
 
@@ -132,6 +132,7 @@
                     <h2 id="p-name">Loading...</h2>
                     <div class="profile-chips" id="p-chips"></div>
                     <p class="profile-since" id="p-since"></p>
+                    <p class="profile-since profile-login" id="p-login"></p>
                 </div>
             </section>
 
@@ -146,11 +147,23 @@
                         <label class="field">Username
                             <input type="text" id="p-username" maxlength="50" autocomplete="username">
                         </label>
+                        <label class="field">Email address <span class="optional">(optional)</span>
+                            <input type="email" id="p-email" maxlength="150" autocomplete="email">
+                        </label>
+                        <label class="field">Contact number <span class="optional">(optional)</span>
+                            <input type="tel" id="p-phone" maxlength="30" autocomplete="tel">
+                        </label>
                         <label class="field span-2" id="business-field" hidden>Business name
                             <input type="text" id="p-business" maxlength="100" autocomplete="organization">
                         </label>
+                        <label class="field span-2" id="address-field" hidden>Business address <span class="optional">(optional)</span>
+                            <input type="text" id="p-address" maxlength="255" autocomplete="street-address">
+                        </label>
+                        <label class="field span-2" id="tagline-field" hidden>Tagline <span class="optional">(optional)</span>
+                            <input type="text" id="p-tagline" maxlength="150">
+                        </label>
                     </div>
-                    <p class="hint">The username is what you type to log in: 3 to 50 letters, numbers, dot, dash or underscore.</p>
+                    <p class="hint">The username is what you type to log in: 3 to 50 letters, numbers, dot, dash or underscore. Your email is used for password recovery and low-stock notices; the contact number, address and tagline can head your printed reports.</p>
                     <div class="profile-actions">
                         <button type="submit" class="btn btn-fill" id="profile-save">Save changes</button>
                     </div>
@@ -178,8 +191,37 @@
                     </div>
                 </form>
             </section>
+
+            <section class="panel profile-panel danger-zone" aria-labelledby="danger-title">
+                <h2 id="danger-title">Danger zone</h2>
+                <p class="hint" id="danger-text">Deleting your account removes it for good, together with its recipes, ingredients and stock history. This cannot be undone. You will be asked for your password first.</p>
+                <div class="profile-actions">
+                    <button type="button" class="btn btn-danger" id="delete-open">Delete account</button>
+                </div>
+            </section>
         </main>
     </div>
+
+    <!-- "are you sure?" for deleting the account: asks for the password -->
+    <dialog id="delete-dialog" class="dialog dialog-small" aria-labelledby="delete-title">
+        <form id="delete-form" novalidate>
+            <div class="dialog-head">
+                <h2 id="delete-title">Delete your account?</h2>
+                <button type="button" class="dialog-close" id="delete-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="dialog-body">
+                <div id="delete-error" class="alert alert-error" role="alert" hidden></div>
+                <p class="confirm-text" id="delete-text"></p>
+                <label class="field">Type your password to confirm
+                    <input type="password" id="p-delete-password" autocomplete="current-password">
+                </label>
+            </div>
+            <div class="dialog-foot">
+                <button type="button" class="btn btn-line" id="delete-cancel">Cancel</button>
+                <button type="submit" class="btn btn-danger" id="delete-confirm">Delete for good</button>
+            </div>
+        </form>
+    </dialog>
 
     <script src="../api/client.js"></script>
     <script src="../api/auth.js"></script>
@@ -188,6 +230,7 @@
     <script src="../api/profile.js"></script>
     <script src="../assets/js/shell.js"></script>
     <script src="../assets/js/profile-page.js"></script>
+    <script src="../assets/js/settings-extras.js"></script>
     <script src="../assets/js/notif-center.js"></script>
 </body>
 </html>

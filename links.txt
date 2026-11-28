@@ -1,0 +1,1 @@
+landing page: http://localhost/Costodian-Food-Costing-Inventory/frontend/landing.html#home
