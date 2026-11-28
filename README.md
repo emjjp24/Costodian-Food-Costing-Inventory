@@ -10,6 +10,7 @@ The system combines recipe costing and inventory management in a single account.
 
 - Register and log in to personal or business accounts
 - Manage user profiles and passwords
+- Recover an administrator's password with the security question chosen at sign up
 - Create, update, and delete recipes
 - Calculate batch cost, cost per serving, and suggested selling price
 - Manage ingredients, categories, reorder levels, and expiry dates
@@ -120,6 +121,8 @@ If Apache or MySQL fails to start, close applications that are using ports 80 or
 5. Select **Import**.
 6. Choose `backend/database/database.sql`.
 7. Select **Go** to create the database and starter data.
+
+For an existing database, run `backend/database/add_password_recovery_columns.sql` once in phpMyAdmin. Existing account administrators can then set their recovery question in **Profile**; new signups can set it during signup and update it there later.
 
 The database name is `foodcost_db`. The database configuration is defined in `backend/src/config/database.php` and uses the following XAMPP defaults:
 

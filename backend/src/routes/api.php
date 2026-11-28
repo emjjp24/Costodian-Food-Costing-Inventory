@@ -15,18 +15,26 @@
 $routes = [
 
     // ---- login and account ----
-    // sign up (free): full_name, username, password, confirm_password,
+    // sign up (free): full_name, username, password, confirm_password, recovery_question, recovery_answer,
     //   account_type = personal | business, business_name (needed for business)
     //   makes a new account with its own empty inventory and logs the person in
     'auth/register' => ['POST', 'auth.php', 'authRegister', 'public'],
     // login: username, password
     'auth/login' => ['POST', 'auth.php', 'authLogin', 'public'],
+    // verify recovery question: username, recovery_question, recovery_answer
+    'auth/recovery/verify' => ['POST', 'auth.php', 'authRecoveryVerify', 'public'],
+    // set a new password after recovery verification: new_password, confirm_password
+    'auth/recovery/reset' => ['POST', 'auth.php', 'authRecoveryReset', 'public'],
+    // cancel an unfinished recovery verification
+    'auth/recovery/cancel' => ['POST', 'auth.php', 'authRecoveryCancel', 'public'],
     'auth/logout' => ['POST', 'auth.php', 'authLogout', 'public'],
     // who is logged in (the frontend calls this when a page opens)
     'auth/me' => ['GET', 'auth.php', 'authMe', 'login'],
     // change own profile: full_name, username, email (optional), phone (optional),
     //   business_name, business_address, business_tagline (only the administrator of a business account)
     'auth/profile' => ['POST', 'auth.php', 'authProfile', 'login'],
+    // set/update recovery question, recovery_answer and current_password (account administrators only)
+    'auth/recovery/setup' => ['POST', 'auth.php', 'authRecoverySetup', 'login'],
     // change own password: current_password, new_password, confirm_password
     'auth/password' => ['POST', 'auth.php', 'authPassword', 'login'],
     // delete own account: password. Staff delete only their own login, the administrator deletes the whole account and its data

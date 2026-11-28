@@ -12,7 +12,8 @@ label{
 }
 
 input[type="text"],
-input[type="password"]{
+input[type="password"],
+select{
     width: 100%;
     padding: 10px 12px;
     font-size: 15px;
@@ -24,7 +25,8 @@ input[type="password"]{
 }
 
 input[type="text"]:focus,
-input[type="password"]:focus{
+input[type="password"]:focus,
+select:focus{
     outline: 3px solid var(--ring);
     border-color: var(--accent-1);
 }

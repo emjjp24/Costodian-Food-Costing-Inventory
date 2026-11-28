@@ -3,6 +3,7 @@
 
 var profileForm = document.getElementById('profile-form');
 var passwordForm = document.getElementById('password-form');
+var recoverySettingsForm = document.getElementById('recovery-settings-form');
 var pageMessage = document.getElementById('page-message');
 var profileUser = null;
 
@@ -118,6 +119,14 @@ function drawProfile(user){
     setValue('p-address', isBusinessAdmin ? (user.account_address || '') : '');
     setValue('p-tagline', isBusinessAdmin ? (user.account_tagline || '') : '');
 
+    setHidden('recovery-settings', user.role != 'admin');
+    if(user.role == 'admin' && recoverySettingsForm){
+        fillRecoveryQuestionSelect(recoverySettingsForm.elements['recovery_question']);
+        recoverySettingsForm.elements['recovery_question'].value = user.recovery_question || '';
+        recoverySettingsForm.elements['recovery_answer'].value = '';
+        recoverySettingsForm.elements['current_password'].value = '';
+    }
+
     drawDangerZone(user);
 
     // the top bar shows the new name at once
@@ -173,6 +182,40 @@ profileForm.addEventListener('submit', function(event){
         button.disabled = false;
         if(!reply.success){
             showFormError('profile-error', reply.message);
+            return;
+        }
+        drawProfile(reply.data);
+        showMessage(reply.message, true);
+    });
+});
+
+recoverySettingsForm.addEventListener('submit', function(event){
+    event.preventDefault();
+    pageMessage.hidden = true;
+    showFormError('recovery-settings-error', '');
+
+    var question = recoverySettingsForm.elements['recovery_question'].value;
+    var answer = recoverySettingsForm.elements['recovery_answer'].value.trim();
+    var currentPassword = recoverySettingsForm.elements['current_password'].value;
+    if(question == '' || answer == '' || currentPassword == ''){
+        showFormError('recovery-settings-error', 'Please choose a recovery question, enter its answer and confirm your current password.');
+        return;
+    }
+    if(answer.length > 72){
+        showFormError('recovery-settings-error', 'The recovery answer must not be longer than 72 characters.');
+        return;
+    }
+    if(currentPassword.length > 72){
+        showFormError('recovery-settings-error', 'The current password is not valid.');
+        return;
+    }
+
+    var button = document.getElementById('recovery-settings-save');
+    button.disabled = true;
+    saveRecoverySettings(question, answer, currentPassword).then(function(reply){
+        button.disabled = false;
+        if(!reply.success){
+            showFormError('recovery-settings-error', reply.message);
             return;
         }
         drawProfile(reply.data);

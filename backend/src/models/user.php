@@ -1,7 +1,7 @@
 <?php
 // find a user by id (without the password), with the account the user belongs to
 function findUserById($conn, $id){
-    $sql = "SELECT u.id, u.account_id, u.full_name, u.username, u.email, u.phone, u.role, u.is_active, u.last_login_at, u.created_at,
+    $sql = "SELECT u.id, u.account_id, u.full_name, u.username, u.email, u.phone, u.role, u.recovery_question, u.is_active, u.last_login_at, u.created_at,
                    a.name AS account_name, a.type AS account_type, a.address AS account_address, a.tagline AS account_tagline
             FROM users u
             JOIN accounts a ON a.id = u.account_id
@@ -68,14 +68,17 @@ function findStaffMember($conn, $id, $account_id){
     return $stmt->fetch();
 }
 
-function insertUser($conn, $account_id, $full_name, $username, $password_hash, $role){
-    $sql = "INSERT INTO users (account_id, full_name, username, password, role) VALUES (:account_id, :full_name, :username, :password, :role)";
+function insertUser($conn, $account_id, $full_name, $username, $password_hash, $role, $recovery_question = null, $recovery_answer_hash = null){
+    $sql = "INSERT INTO users (account_id, full_name, username, password, role, recovery_question, recovery_answer)
+            VALUES (:account_id, :full_name, :username, :password, :role, :recovery_question, :recovery_answer)";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':account_id', $account_id);
     $stmt->bindParam(':full_name', $full_name);
     $stmt->bindParam(':username', $username);
     $stmt->bindParam(':password', $password_hash);
     $stmt->bindParam(':role', $role);
+    $stmt->bindParam(':recovery_question', $recovery_question);
+    $stmt->bindParam(':recovery_answer', $recovery_answer_hash);
     $stmt->execute();
     return (int)$conn->lastInsertId();
 }
@@ -128,6 +131,23 @@ function updateUserPassword($conn, $id, $password_hash){
     $stmt->bindParam(':password', $password_hash);
     $stmt->bindParam(':id', $id);
     $stmt->execute();
+}
+
+function updateUserRecovery($conn, $id, $question, $answer_hash){
+    $sql = "UPDATE users SET recovery_question = :question, recovery_answer = :answer WHERE id = :id AND role = 'admin'";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':question', $question);
+    $stmt->bindParam(':answer', $answer_hash);
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
+}
+
+function findRecoveryAdminById($conn, $id){
+    $sql = "SELECT id, username FROM users WHERE id = :id AND role = 'admin'";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
+    return $stmt->fetch();
 }
 
 // a staff member deletes their own login (the stock history stays, without the name)

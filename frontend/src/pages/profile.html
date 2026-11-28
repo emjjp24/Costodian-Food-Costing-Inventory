@@ -163,7 +163,7 @@
                             <input type="text" id="p-tagline" maxlength="150">
                         </label>
                     </div>
-                    <p class="hint">The username is what you type to log in: 3 to 50 letters, numbers, dot, dash or underscore. Your email is used for password recovery and low-stock notices; the contact number, address and tagline can head your printed reports.</p>
+                    <p class="hint">The username is what you type to log in: 3 to 50 letters, numbers, dot, dash or underscore. Your email is used for low-stock notices; the contact number, address and tagline can head your printed reports.</p>
                     <div class="profile-actions">
                         <button type="submit" class="btn btn-fill" id="profile-save">Save changes</button>
                     </div>
@@ -188,6 +188,28 @@
                     <p class="hint">The new password must be 8 to 72 characters long.</p>
                     <div class="profile-actions">
                         <button type="submit" class="btn btn-fill" id="password-save">Change password</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="panel profile-panel" id="recovery-settings" aria-labelledby="recovery-settings-title" hidden>
+                <h2 id="recovery-settings-title">Password recovery</h2>
+                <form id="recovery-settings-form" novalidate>
+                    <div id="recovery-settings-error" class="alert alert-error" role="alert" hidden></div>
+                    <div class="form-grid">
+                        <label class="field span-2">Recovery question
+                            <select id="p-recovery-question" name="recovery_question"></select>
+                        </label>
+                        <label class="field span-2">Recovery answer
+                            <input type="text" id="p-recovery-answer" name="recovery_answer" maxlength="72" autocomplete="off">
+                        </label>
+                        <label class="field span-2">Current password
+                            <input type="password" id="p-recovery-current-password" name="current_password" maxlength="72" autocomplete="current-password">
+                        </label>
+                    </div>
+                    <p class="hint">Set or update the question used to verify your identity before a password reset. The answer is case-insensitive; choose one that other people cannot easily guess. Enter your current password to confirm this change.</p>
+                    <div class="profile-actions">
+                        <button type="submit" class="btn btn-fill" id="recovery-settings-save">Save recovery details</button>
                     </div>
                 </form>
             </section>

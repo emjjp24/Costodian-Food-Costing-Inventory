@@ -95,6 +95,17 @@
                     </div>
                 </div>
 
+                <div class="field">
+                    <label for="recovery-question">Recovery question</label>
+                    <select id="recovery-question" name="recovery_question"></select>
+                </div>
+
+                <div class="field">
+                    <label for="recovery-answer">Recovery answer</label>
+                    <input type="text" id="recovery-answer" name="recovery_answer" maxlength="72" autocomplete="off">
+                    <span class="hint">Choose an answer you will remember that other people cannot easily guess.</span>
+                </div>
+
                 <button type="submit" id="submit-btn" class="btn-primary">Sign up</button>
             </form>
 
@@ -115,6 +126,8 @@
         var message = document.getElementById('message');
         var submitBtn = document.getElementById('submit-btn');
         var businessField = document.getElementById('business-field');
+
+        fillRecoveryQuestionSelect(form.elements['recovery_question']);
 
         // show a message in the alert box (textContent keeps typed characters from running as HTML)
         function showMessage(text, ok){
@@ -152,7 +165,9 @@
                 full_name: form.elements['full_name'].value.trim(),
                 username: form.elements['username'].value.trim(),
                 password: form.elements['password'].value,
-                confirm_password: form.elements['confirm_password'].value
+                confirm_password: form.elements['confirm_password'].value,
+                recovery_question: form.elements['recovery_question'].value,
+                recovery_answer: form.elements['recovery_answer'].value.trim()
             };
 
             var error = validateSignupForm(values);

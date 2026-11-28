@@ -32,6 +32,26 @@ button{
     cursor: wait;
 }
 
+.btn-secondary{
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.btn-secondary:hover{
+    background: var(--soft);
+}
+
+.btn-secondary:focus-visible{
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+}
+
 .alert{
     margin-bottom: 14px;
     padding: 10px 12px;
