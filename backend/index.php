@@ -8,6 +8,15 @@ define('EXPIRY_WARNING_DAYS', 3);
 // the most staff accounts one business account can have
 define('MAX_STAFF_PER_ACCOUNT', 10);
 
+// the shortest password allowed when somebody sets a new one (the longest is 72, a limit of bcrypt)
+define('MIN_PASSWORD_LENGTH', 8);
+
+// slowing down password guessing: after this many wrong passwords for one username
+// (or LOGIN_MAX_FAILS_PER_IP from one computer) login is locked for LOGIN_LOCK_MINUTES
+define('LOGIN_MAX_FAILS', 5);
+define('LOGIN_MAX_FAILS_PER_IP', 20);
+define('LOGIN_LOCK_MINUTES', 15);
+
 // dates (expiry, alerts) follow the local time
 date_default_timezone_set('Asia/Manila');
 
@@ -26,6 +35,7 @@ include_once($src . "middlewares/role.php");
 
 include_once($src . "models/account.php");
 include_once($src . "models/user.php");
+include_once($src . "models/loginattempt.php");
 include_once($src . "models/category.php");
 include_once($src . "models/ingredient.php");
 include_once($src . "models/recipe.php");

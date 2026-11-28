@@ -32,8 +32,8 @@ function validateRegister($post){
     if(!preg_match('/^[A-Za-z0-9_.-]{3,50}$/', $username)){
         return ['The username must be 3 to 50 characters: letters, numbers, dot, dash or underscore.', null];
     }
-    if(strlen($password) < 6 || strlen($password) > 72){
-        return ['The password must be 6 to 72 characters long.', null];
+    if(strlen($password) < MIN_PASSWORD_LENGTH || strlen($password) > 72){
+        return ['The password must be ' . MIN_PASSWORD_LENGTH . ' to 72 characters long.', null];
     }
     if($password !== $confirm){
         return ['The password and the confirmation do not match.', null];
@@ -111,8 +111,8 @@ function validatePasswordChange($post){
     if($current == "" || $new == "" || $confirm == ""){
         return ['Please fill in all the password fields.', null];
     }
-    if(strlen($new) < 6 || strlen($new) > 72){
-        return ['The new password must be 6 to 72 characters long.', null];
+    if(strlen($new) < MIN_PASSWORD_LENGTH || strlen($new) > 72){
+        return ['The new password must be ' . MIN_PASSWORD_LENGTH . ' to 72 characters long.', null];
     }
     if($new !== $confirm){
         return ['The new password and the confirmation do not match.', null];

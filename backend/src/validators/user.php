@@ -19,8 +19,8 @@ function validateStaff($post, $is_new){
         if($password == ""){
             return ['Please enter a password for the staff member.', null];
         }
-        if(strlen($password) < 6 || strlen($password) > 72){
-            return ['The password must be 6 to 72 characters long.', null];
+        if(strlen($password) < MIN_PASSWORD_LENGTH || strlen($password) > 72){
+            return ['The password must be ' . MIN_PASSWORD_LENGTH . ' to 72 characters long.', null];
         }
     }
 
@@ -35,8 +35,8 @@ function validateStaffPassword($post){
     if($password == ""){
         return ['Please enter the new password.', null];
     }
-    if(strlen($password) < 6 || strlen($password) > 72){
-        return ['The password must be 6 to 72 characters long.', null];
+    if(strlen($password) < MIN_PASSWORD_LENGTH || strlen($password) > 72){
+        return ['The password must be ' . MIN_PASSWORD_LENGTH . ' to 72 characters long.', null];
     }
     if($confirm != "" && $password !== $confirm){
         return ['The new password and the confirmation do not match.', null];
@@ -58,4 +58,4 @@ function validateStaffStatus($post){
     }
     return ['The status must be 1 (on) or 0 (off).', null];
 }
-?>
+?>  
