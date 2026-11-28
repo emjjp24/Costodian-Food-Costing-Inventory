@@ -1,8 +1,8 @@
 <?php
 // find a user by id (without the password), with the account the user belongs to
 function findUserById($conn, $id){
-    $sql = "SELECT u.id, u.account_id, u.full_name, u.username, u.role, u.is_active, u.last_login_at, u.created_at,
-                   a.name AS account_name, a.type AS account_type
+    $sql = "SELECT u.id, u.account_id, u.full_name, u.username, u.email, u.phone, u.role, u.is_active, u.last_login_at, u.created_at,
+                   a.name AS account_name, a.type AS account_type, a.address AS account_address, a.tagline AS account_tagline
             FROM users u
             JOIN accounts a ON a.id = u.account_id
             WHERE u.id = :id";
@@ -107,12 +107,17 @@ function touchLastLogin($conn, $id){
     $stmt->execute();
 }
 
-// a person changes their own name and username (the role and the account never change here)
-function updateOwnProfile($conn, $id, $full_name, $username){
-    $sql = "UPDATE users SET full_name = :full_name, username = :username WHERE id = :id";
+// a person changes their own name, username, email and contact number (the role and the account never change here)
+// email and phone are optional: "" is saved as empty (NULL)
+function updateOwnProfile($conn, $id, $full_name, $username, $email, $phone){
+    $email = ($email == "") ? null : $email;
+    $phone = ($phone == "") ? null : $phone;
+    $sql = "UPDATE users SET full_name = :full_name, username = :username, email = :email, phone = :phone WHERE id = :id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':full_name', $full_name);
     $stmt->bindParam(':username', $username);
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':phone', $phone);
     $stmt->bindParam(':id', $id);
     $stmt->execute();
 }
@@ -121,6 +126,14 @@ function updateUserPassword($conn, $id, $password_hash){
     $sql = "UPDATE users SET password = :password WHERE id = :id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':password', $password_hash);
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
+}
+
+// a staff member deletes their own login (the stock history stays, without the name)
+function deleteOwnStaffLogin($conn, $id){
+    $sql = "DELETE FROM users WHERE id = :id AND role = 'staff'";
+    $stmt = $conn->prepare($sql);
     $stmt->bindParam(':id', $id);
     $stmt->execute();
 }

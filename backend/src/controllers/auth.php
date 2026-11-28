@@ -5,10 +5,14 @@ function userInfo($row){
         'id' => (int)$row['id'],
         'full_name' => $row['full_name'],
         'username' => $row['username'],
+        'email' => isset($row['email']) ? $row['email'] : null,
+        'phone' => isset($row['phone']) ? $row['phone'] : null,
         'role' => $row['role'],
         'account_id' => (int)$row['account_id'],
         'account_name' => $row['account_name'],
         'account_type' => $row['account_type'],
+        'account_address' => isset($row['account_address']) ? $row['account_address'] : null,
+        'account_tagline' => isset($row['account_tagline']) ? $row['account_tagline'] : null,
         'created_at' => isset($row['created_at']) ? $row['created_at'] : null,
         'last_login_at' => isset($row['last_login_at']) ? $row['last_login_at'] : null,
         // what this user may do (the frontend hides the buttons that are not allowed)
@@ -94,7 +98,7 @@ function authMe($conn, $user){
     respond(true, 'OK', userInfo($user));
 }
 
-// my profile: full_name, username, and business_name (only the administrator of a business account)
+// my profile: full_name, username, email, phone, and business_name, business_address, business_tagline (only the administrator of a business account)
 function authProfile($conn, $user){
 
     $is_business = $user['account_type'] == 'business';
@@ -109,7 +113,7 @@ function authProfile($conn, $user){
     }
 
     try{
-        updateOwnProfile($conn, (int)$user['id'], $data['full_name'], $data['username']);
+        updateOwnProfile($conn, (int)$user['id'], $data['full_name'], $data['username'], $data['email'], $data['phone']);
     } catch(PDOException $e){
         // two people picked the same username at the same moment
         if($e->getCode() == '23000'){
@@ -121,6 +125,7 @@ function authProfile($conn, $user){
     // the name of the account: the business name, or the person's own name for a personal account
     if($can_rename_business){
         updateAccountName($conn, (int)$user['account_id'], $data['business_name']);
+        updateAccountDetails($conn, (int)$user['account_id'], $data['business_address'], $data['business_tagline']);
     } elseif(!$is_business){
         updateAccountName($conn, (int)$user['account_id'], $data['full_name']);
     }
@@ -142,5 +147,43 @@ function authPassword($conn, $user){
 
     updateUserPassword($conn, $user['id'], password_hash($data['new'], PASSWORD_DEFAULT));
     respond(true, 'Your password was changed.');
+}
+
+// delete my own account (needs the password)
+// a staff member deletes only their own login; the administrator deletes the whole account with all its data
+function authDelete($conn, $user){
+
+    list($error, $password) = validateDeleteAccount($_POST);
+    if($error){
+        respond(false, $error, null, 400);
+    }
+
+    $found = findUserByUsername($conn, $user['username']);
+    if(!$found || !password_verify($password, $found['password'])){
+        respond(false, 'The password is wrong.', null, 400);
+    }
+
+    if($user['role'] == 'admin'){
+        $conn->beginTransaction();
+        try{
+            deleteAccountWithData($conn, (int)$user['account_id']);
+            $conn->commit();
+        } catch(Throwable $e){
+            if($conn->inTransaction()){
+                $conn->rollBack();
+            }
+            throw $e;
+        }
+        $message = 'Your account and all its data were deleted.';
+    } else {
+        deleteOwnStaffLogin($conn, (int)$user['id']);
+        $message = 'Your login was deleted.';
+    }
+
+    $_SESSION = [];
+    if(session_status() == PHP_SESSION_ACTIVE){
+        session_destroy();
+    }
+    respond(true, $message);
 }
 ?>

@@ -55,11 +55,16 @@ function validateRegister($post){
     return [null, ['full_name' => $full_name, 'username' => $username, 'password' => $password, 'account_type' => $type, 'account_name' => $account_name]];
 }
 
-// "my profile": full name and username for everyone, the business name only for the administrator of a business
+// "my profile": full name, username, email and contact number for everyone (email and number are optional),
+// the business name, address and tagline only for the administrator of a business
 function validateProfile($post, $can_rename_business){
     $full_name = isset($post['full_name']) ? cleanText($post['full_name']) : "";
     $username = isset($post['username']) ? cleanText($post['username']) : "";
+    $email = isset($post['email']) ? cleanText($post['email']) : "";
+    $phone = isset($post['phone']) ? cleanText($post['phone']) : "";
     $business_name = isset($post['business_name']) ? cleanText($post['business_name']) : "";
+    $address = isset($post['business_address']) ? cleanText($post['business_address']) : "";
+    $tagline = isset($post['business_tagline']) ? cleanText($post['business_tagline']) : "";
 
     if($full_name == "" || $username == ""){
         return ['Please fill in your full name and username.', null];
@@ -70,6 +75,16 @@ function validateProfile($post, $can_rename_business){
     if(!preg_match('/^[A-Za-z0-9_.-]{3,50}$/', $username)){
         return ['The username must be 3 to 50 characters: letters, numbers, dot, dash or underscore.', null];
     }
+    if($email != ""){
+        if(mb_strlen($email) > 150 || !filter_var($email, FILTER_VALIDATE_EMAIL)){
+            return ['Please enter a valid email address, or leave it empty.', null];
+        }
+    }
+    if($phone != ""){
+        if(!preg_match('/^[0-9+()\-. ]{7,30}$/', $phone)){
+            return ['The contact number can only have digits, spaces, + ( ) - and a dot (7 to 30 characters).', null];
+        }
+    }
     if($can_rename_business){
         if($business_name == ""){
             return ['Please enter the name of your business.', null];
@@ -77,8 +92,15 @@ function validateProfile($post, $can_rename_business){
         if(mb_strlen($business_name) > 100){
             return ['The business name must not be longer than 100 characters.', null];
         }
+        if(mb_strlen($address) > 255){
+            return ['The business address must not be longer than 255 characters.', null];
+        }
+        if(mb_strlen($tagline) > 150){
+            return ['The tagline must not be longer than 150 characters.', null];
+        }
     }
-    return [null, ['full_name' => $full_name, 'username' => $username, 'business_name' => $business_name]];
+    return [null, ['full_name' => $full_name, 'username' => $username, 'email' => $email, 'phone' => $phone,
+                   'business_name' => $business_name, 'business_address' => $address, 'business_tagline' => $tagline]];
 }
 
 function validatePasswordChange($post){
@@ -96,5 +118,14 @@ function validatePasswordChange($post){
         return ['The new password and the confirmation do not match.', null];
     }
     return [null, ['current' => $current, 'new' => $new]];
+}
+
+// deleting your own account asks for the password once more
+function validateDeleteAccount($post){
+    $password = (isset($post['password']) && is_string($post['password'])) ? $post['password'] : "";
+    if($password == ""){
+        return ['Please enter your password to delete the account.', null];
+    }
+    return [null, $password];
 }
 ?>

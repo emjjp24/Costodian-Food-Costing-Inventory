@@ -1,6 +1,7 @@
 -- FoodCost database
 -- How to use: open phpMyAdmin, choose Import, select this file and click Go.
 -- It is safe to run again: existing tables and data are kept.
+-- Already have the database from before? Run add_profile_columns.sql once instead (it adds the new profile columns).
 -- NOTE: this version has accounts (sign up). If you imported the older version
 -- before, drop its tables first (phpMyAdmin > foodcost_db > select all tables > Drop)
 -- and then import this file.
@@ -14,6 +15,8 @@ CREATE TABLE IF NOT EXISTS accounts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,                  -- the business name, or the person's name
     type ENUM('personal','business') NOT NULL DEFAULT 'personal',
+    address VARCHAR(255) DEFAULT NULL,           -- optional: business address (for printed reports)
+    tagline VARCHAR(150) DEFAULT NULL,           -- optional: business tagline (for printed reports)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -23,6 +26,8 @@ CREATE TABLE IF NOT EXISTS users (
     account_id INT NOT NULL,
     full_name VARCHAR(100) NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(150) DEFAULT NULL,             -- optional: password recovery and low-stock notices
+    phone VARCHAR(30) DEFAULT NULL,              -- optional: contact number
     password VARCHAR(255) NOT NULL,              -- password_hash()
     role ENUM('admin','staff') NOT NULL DEFAULT 'staff',
     is_active TINYINT(1) NOT NULL DEFAULT 1,     -- 0 = turned off: cannot log in, history is kept

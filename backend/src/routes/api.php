@@ -24,10 +24,13 @@ $routes = [
     'auth/logout' => ['POST', 'auth.php', 'authLogout', 'public'],
     // who is logged in (the frontend calls this when a page opens)
     'auth/me' => ['GET', 'auth.php', 'authMe', 'login'],
-    // change own profile: full_name, username, business_name (only the administrator of a business account)
+    // change own profile: full_name, username, email (optional), phone (optional),
+    //   business_name, business_address, business_tagline (only the administrator of a business account)
     'auth/profile' => ['POST', 'auth.php', 'authProfile', 'login'],
     // change own password: current_password, new_password, confirm_password
     'auth/password' => ['POST', 'auth.php', 'authPassword', 'login'],
+    // delete own account: password. Staff delete only their own login, the administrator deletes the whole account and its data
+    'auth/delete' => ['POST', 'auth.php', 'authDelete', 'login'],
 
     // ---- dashboard ----
     'dashboard/summary' => ['GET', 'dashboard.php', 'dashboardSummary', 'login'],
