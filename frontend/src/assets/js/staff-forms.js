@@ -58,8 +58,8 @@ function validateStaffForm(values, isNew){
         if(values.password == ""){
             return 'Please enter a password for the staff member.';
         }
-        if(values.password.length < 6 || values.password.length > 72){
-            return 'The password must be 6 to 72 characters long.';
+        if(values.password.length < 8 || values.password.length > 72){
+            return 'The password must be 8 to 72 characters long.';
         }
     }
     return "";
@@ -127,8 +127,8 @@ passForm.addEventListener('submit', function(event){
         showError(passError, 'Please enter the new password.');
         return;
     }
-    if(pNew.value.length < 6 || pNew.value.length > 72){
-        showError(passError, 'The password must be 6 to 72 characters long.');
+    if(pNew.value.length < 8 || pNew.value.length > 72){
+        showError(passError, 'The password must be 8 to 72 characters long.');
         return;
     }
     if(pNew.value !== pConfirm.value){

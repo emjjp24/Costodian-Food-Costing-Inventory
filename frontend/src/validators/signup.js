@@ -15,8 +15,8 @@ function validateSignupForm(values){
     if(!/^[A-Za-z0-9_.-]{3,50}$/.test(values.username)){
         return 'The username must be 3 to 50 characters: letters, numbers, dot, dash or underscore.';
     }
-    if(values.password.length < 6){
-        return 'The password must be at least 6 characters long.';
+    if(values.password.length < 8){
+        return 'The password must be at least 8 characters long.';
     }
     if(values.password !== values.confirm_password){
         return 'The password and the confirmation do not match.';
