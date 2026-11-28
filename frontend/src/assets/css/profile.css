@@ -73,3 +73,9 @@
 .profile-panel .alert{
     margin-bottom: 12px;
 }
+
+/* .field sets display: block, which beats the hidden attribute:
+   without this the business name box also showed on personal accounts */
+#business-field[hidden]{
+    display: none;
+}
