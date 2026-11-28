@@ -62,8 +62,37 @@
                 <button type="submit" id="submit-btn" class="btn-primary">Sign in</button>
             </form>
 
+            <form id="recovery-form" novalidate hidden>
+                <div id="recovery-verify-fields">
+                    <div class="field">
+                        <label for="recovery-username">Username</label>
+                        <input type="text" id="recovery-username" name="username" maxlength="50" autocomplete="username">
+                    </div>
+                    <div class="field">
+                        <label for="recovery-question">Recovery question</label>
+                        <select id="recovery-question" name="recovery_question"></select>
+                    </div>
+                    <div class="field">
+                        <label for="recovery-answer">Answer</label>
+                        <input type="text" id="recovery-answer" name="recovery_answer" maxlength="72" autocomplete="off">
+                    </div>
+                    <button type="button" id="recovery-verify" class="btn-primary">Verify answer</button>
+                </div>
+                <div id="recovery-password-fields" hidden>
+                    <div class="field">
+                        <label for="recovery-new-password">New password</label>
+                        <input type="password" id="recovery-new-password" name="new_password" maxlength="72" autocomplete="new-password">
+                    </div>
+                    <div class="field">
+                        <label for="recovery-confirm-password">Confirm new password</label>
+                        <input type="password" id="recovery-confirm-password" name="confirm_password" maxlength="72" autocomplete="new-password">
+                    </div>
+                    <button type="submit" id="recovery-submit" class="btn-primary">Reset password</button>
+                </div>
+                <button type="button" id="recovery-back" class="btn-secondary">Back to log in</button>
+            </form>
+
             <div class="links">
-                <a href="#" id="forgot">Forgot password?</a>
                 <p>New here? <a href="src/pages/signup.html">Create a free account</a></p>
             </div>
         </main>
@@ -81,8 +110,17 @@
         skipLoginIfSignedIn(AFTER_LOGIN_PAGE);
 
         var form = document.getElementById('login-form');
+        var recoveryForm = document.getElementById('recovery-form');
         var message = document.getElementById('message');
         var submitBtn = document.getElementById('submit-btn');
+        var recoveryVerify = document.getElementById('recovery-verify');
+        var recoverySubmit = document.getElementById('recovery-submit');
+        var recoveryVerified = false;
+        var heading = document.querySelector('.auth-card h1');
+        var tagline = document.querySelector('.auth-card .tagline');
+        var originalTagline = tagline.textContent;
+
+        fillRecoveryQuestionSelect(recoveryForm.elements['recovery_question']);
 
         // show a message in the alert box (textContent keeps typed characters from running as HTML)
         function showMessage(text, ok){
@@ -131,10 +169,97 @@
 
         loadRemembered();
 
-        // there is no email reset in this system, an administrator changes the password
+        function showRecoveryForm(show){
+            var recoveryUsername = recoveryForm.elements['username'].value.trim();
+            if(!show && recoveryVerified){
+                cancelRecoveryVerification();
+            }
+            recoveryVerified = false;
+            form.hidden = show;
+            recoveryForm.hidden = !show;
+            document.getElementById('recovery-verify-fields').hidden = false;
+            document.getElementById('recovery-password-fields').hidden = true;
+            heading.textContent = show ? 'Reset password' : 'Sign in';
+            tagline.textContent = show ? 'Answer your recovery question to reset your password' : originalTagline;
+            message.hidden = true;
+            if(show){
+                recoveryForm.elements['username'].value = form.elements['username'].value.trim();
+                recoveryForm.elements['username'].focus();
+            } else {
+                recoveryForm.reset();
+                if(recoveryUsername != ''){
+                    form.elements['username'].value = recoveryUsername;
+                }
+                form.elements['password'].value = '';
+                form.elements['username'].focus();
+            }
+        }
+
         document.getElementById('forgot').addEventListener('click', function(event){
             event.preventDefault();
-            showMessage('Please ask an administrator to reset your password.', false);
+            showRecoveryForm(true);
+        });
+
+        document.getElementById('recovery-back').addEventListener('click', function(event){
+            event.preventDefault();
+            showRecoveryForm(false);
+        });
+
+        recoveryVerify.addEventListener('click', function(){
+            var values = {
+                username: recoveryForm.elements['username'].value.trim(),
+                recovery_question: recoveryForm.elements['recovery_question'].value,
+                recovery_answer: recoveryForm.elements['recovery_answer'].value.trim()
+            };
+            var error = validateRecoveryVerification(values);
+            if(error != ""){
+                showMessage(error, false);
+                return;
+            }
+
+            recoveryVerify.disabled = true;
+            recoveryVerify.textContent = 'Verifying answer...';
+            verifyRecoveryAnswer(values).then(function(reply){
+                recoveryVerify.disabled = false;
+                recoveryVerify.textContent = 'Verify answer';
+                if(!reply.success){
+                    showMessage(reply.message, false);
+                    return;
+                }
+                recoveryVerified = true;
+                recoveryForm.elements['recovery_answer'].value = '';
+                document.getElementById('recovery-verify-fields').hidden = true;
+                document.getElementById('recovery-password-fields').hidden = false;
+                recoveryForm.elements['new_password'].focus();
+                showMessage(reply.message, true);
+            });
+        });
+
+        recoveryForm.addEventListener('submit', function(event){
+            event.preventDefault();
+            var values = {
+                new_password: recoveryForm.elements['new_password'].value,
+                confirm_password: recoveryForm.elements['confirm_password'].value
+            };
+            var error = validateRecoveryPassword(values);
+            if(error != ""){
+                showMessage(error, false);
+                return;
+            }
+
+            recoverySubmit.disabled = true;
+            recoverySubmit.textContent = 'Resetting password...';
+            resetPasswordWithRecovery(values).then(function(reply){
+                recoverySubmit.disabled = false;
+                recoverySubmit.textContent = 'Reset password';
+                if(reply.success){
+                    form.elements['username'].value = recoveryForm.elements['username'].value.trim();
+                    showRecoveryForm(false);
+                    showMessage(reply.message, true);
+                } else {
+                    showMessage(reply.message, false);
+                }
+            });
         });
 
         form.addEventListener('submit', function(event){

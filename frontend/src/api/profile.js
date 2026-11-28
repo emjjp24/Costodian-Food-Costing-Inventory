@@ -11,6 +11,15 @@ function changeMyPassword(current, newPassword, confirmPassword){
     return apiPost('auth/password', {current_password: current, new_password: newPassword, confirm_password: confirmPassword});
 }
 
+// set/update the logged-in administrator's recovery question and answer
+function saveRecoverySettings(question, answer, currentPassword){
+    return apiPost('auth/recovery/setup', {
+        recovery_question: question,
+        recovery_answer: answer,
+        current_password: currentPassword
+    });
+}
+
 // delete my own account: a staff member deletes only their login, the administrator deletes the whole account
 function deleteMyAccount(password){
     return apiPost('auth/delete', {password: password});

@@ -1,7 +1,7 @@
 -- FoodCost database
 -- How to use: open phpMyAdmin, choose Import, select this file and click Go.
 -- It is safe to run again: existing tables and data are kept.
--- Already have the database from before? Run add_profile_columns.sql and add_login_attempts.sql once instead (they add the new columns and table).
+-- Already have the database from before? Run add_password_recovery_columns.sql once if it does not yet have those fields.
 -- NOTE: this version has accounts (sign up). If you imported the older version
 -- before, drop its tables first (phpMyAdmin > foodcost_db > select all tables > Drop)
 -- and then import this file.
@@ -26,9 +26,11 @@ CREATE TABLE IF NOT EXISTS users (
     account_id INT NOT NULL,
     full_name VARCHAR(100) NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
-    email VARCHAR(150) DEFAULT NULL,             -- optional: password recovery and low-stock notices
+    email VARCHAR(150) DEFAULT NULL,             -- optional: low-stock notices
     phone VARCHAR(30) DEFAULT NULL,              -- optional: contact number
     password VARCHAR(255) NOT NULL,              -- password_hash()
+    recovery_question VARCHAR(32) DEFAULT NULL,   -- preset id for owner password recovery
+    recovery_answer VARCHAR(255) DEFAULT NULL,    -- password_hash() of normalized answer
     role ENUM('admin','staff') NOT NULL DEFAULT 'staff',
     is_active TINYINT(1) NOT NULL DEFAULT 1,     -- 0 = turned off: cannot log in, history is kept
     last_login_at DATETIME DEFAULT NULL,

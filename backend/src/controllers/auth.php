@@ -8,6 +8,7 @@ function userInfo($row){
         'email' => isset($row['email']) ? $row['email'] : null,
         'phone' => isset($row['phone']) ? $row['phone'] : null,
         'role' => $row['role'],
+        'recovery_question' => isset($row['recovery_question']) ? $row['recovery_question'] : null,
         'account_id' => (int)$row['account_id'],
         'account_name' => $row['account_name'],
         'account_type' => $row['account_type'],
@@ -36,7 +37,10 @@ function authRegister($conn, $user){
         try{
             $account_id = insertAccount($conn, $data['account_name'], $data['account_type']);
             // the person who signs up is the administrator of the new account
-            $user_id = insertUser($conn, $account_id, $data['full_name'], $data['username'], password_hash($data['password'], PASSWORD_DEFAULT), 'admin');
+            $user_id = insertUser($conn, $account_id, $data['full_name'], $data['username'],
+                                  password_hash($data['password'], PASSWORD_DEFAULT), 'admin',
+                                  $data['recovery_question'],
+                                  password_hash(normalizeRecoveryAnswer($data['recovery_answer']), PASSWORD_DEFAULT));
             seedDefaultCategories($conn, $account_id);
             $conn->commit();
         } catch(Throwable $e){
@@ -56,6 +60,91 @@ function authRegister($conn, $user){
         respond(true, 'Your account is ready. Welcome, ' . $data['full_name'] . '!', userInfo(findUserById($conn, $user_id)), 201);
     }
     respond(false, 'Please fill in your full name, username and password.', null, 400);
+}
+
+function authRecoveryVerify($conn, $user){
+    unset($_SESSION['password_recovery']);
+    list($error, $data) = validateRecoveryVerification($_POST);
+    if($error){
+        respond(false, $error, null, 400);
+    }
+
+    $wait = loginLockMinutes($conn, $data['username']);
+    if($wait > 0){
+        respond(false, 'Too many wrong attempts. Please try again in ' . $wait . ($wait == 1 ? ' minute.' : ' minutes.'), null, 429);
+    }
+
+    $found = findUserByUsername($conn, $data['username']);
+    $verified = $found
+        && $found['role'] == 'admin'
+        && isset($found['recovery_question'], $found['recovery_answer'])
+        && $found['recovery_question'] === $data['recovery_question']
+        && password_verify(normalizeRecoveryAnswer($data['recovery_answer']), $found['recovery_answer']);
+    if(!$verified){
+        recordLoginFailure($conn, $data['username']);
+        respond(false, 'The username or recovery details are incorrect.', null, 401);
+    }
+
+    session_regenerate_id(true);
+    $_SESSION['password_recovery'] = [
+        'user_id' => (int)$found['id'],
+        'expires_at' => time() + 600
+    ];
+    respond(true, 'Recovery answer verified. You can now set a new password.');
+}
+
+function authRecoveryReset($conn, $user){
+    list($error, $data) = validatePasswordRecovery($_POST);
+    if($error){
+        respond(false, $error, null, 400);
+    }
+
+    $state = isset($_SESSION['password_recovery']) && is_array($_SESSION['password_recovery'])
+        ? $_SESSION['password_recovery']
+        : null;
+    if(!$state || !isset($state['user_id'], $state['expires_at']) || (int)$state['expires_at'] <= time()){
+        unset($_SESSION['password_recovery']);
+        respond(false, 'Please verify your recovery answer again.', null, 401);
+    }
+
+    $found = findRecoveryAdminById($conn, (int)$state['user_id']);
+    if(!$found){
+        unset($_SESSION['password_recovery']);
+        respond(false, 'Please verify your recovery answer again.', null, 401);
+    }
+
+    updateUserPassword($conn, (int)$found['id'], password_hash($data['new_password'], PASSWORD_DEFAULT));
+    clearLoginFailures($conn, $found['username']);
+    unset($_SESSION['password_recovery']);
+    if(isset($_SESSION['userID']) && (int)$_SESSION['userID'] === (int)$found['id']){
+        unset($_SESSION['userID']);
+    }
+    session_regenerate_id(true);
+    respond(true, 'Your password has been reset. You can now log in.');
+}
+
+function authRecoveryCancel($conn, $user){
+    unset($_SESSION['password_recovery']);
+    respond(true, 'Recovery verification cancelled.');
+}
+
+function authRecoverySetup($conn, $user){
+    if($user['role'] != 'admin'){
+        respond(false, 'Only the account administrator can set password recovery details.', null, 403);
+    }
+    list($error, $data) = validateRecoverySettings($_POST);
+    if($error){
+        respond(false, $error, null, 400);
+    }
+
+    $found = findUserByUsername($conn, $user['username']);
+    if(!$found || !password_verify($data['current_password'], $found['password'])){
+        respond(false, 'The current password is wrong.', null, 400);
+    }
+
+    $answer_hash = password_hash(normalizeRecoveryAnswer($data['recovery_answer']), PASSWORD_DEFAULT);
+    updateUserRecovery($conn, (int)$user['id'], $data['recovery_question'], $answer_hash);
+    respond(true, 'Your recovery question has been saved.', userInfo(findUserById($conn, $user['id'])));
 }
 
 function authLogin($conn, $user){
@@ -94,6 +183,7 @@ function authLogin($conn, $user){
 
         // a new session id after login stops session fixation
         session_regenerate_id(true);
+        unset($_SESSION['password_recovery']);
         $_SESSION['userID'] = (int)$found['id'];
         touchLastLogin($conn, (int)$found['id']);
 

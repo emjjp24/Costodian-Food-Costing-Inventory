@@ -54,6 +54,7 @@
 .profile-panel input[type="email"],
 .profile-panel input[type="tel"],
 .profile-panel input[type="password"],
+.profile-panel select,
 #delete-dialog input[type="password"]{
     display: block;
     width: 100%;
@@ -69,6 +70,7 @@
 }
 
 .profile-panel input:focus,
+.profile-panel select:focus,
 #delete-dialog input:focus{
     outline: 3px solid var(--ring);
     border-color: var(--accent-1);

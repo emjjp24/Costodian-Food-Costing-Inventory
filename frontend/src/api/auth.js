@@ -5,6 +5,42 @@
 // staff-link.js checks it on every page.
 var STAFF_LINK_KEY = 'costodian-can-manage-staff';
 
+var RECOVERY_QUESTIONS = {
+    first_pet: 'What was the name of your first pet?',
+    first_school: 'What was the name of your first school?',
+    birth_city: 'In which city were you born?',
+    childhood_nickname: 'What was your childhood nickname?',
+    favorite_teacher: 'What was the surname of a favorite teacher?'
+};
+
+function fillRecoveryQuestionSelect(select){
+    while(select.firstChild){
+        select.removeChild(select.firstChild);
+    }
+    var empty = document.createElement('option');
+    empty.value = '';
+    empty.textContent = 'Choose a question';
+    select.appendChild(empty);
+    Object.keys(RECOVERY_QUESTIONS).forEach(function(key){
+        var option = document.createElement('option');
+        option.value = key;
+        option.textContent = RECOVERY_QUESTIONS[key];
+        select.appendChild(option);
+    });
+}
+
+function verifyRecoveryAnswer(data){
+    return apiPost('auth/recovery/verify', data);
+}
+
+function resetPasswordWithRecovery(data){
+    return apiPost('auth/recovery/reset', data);
+}
+
+function cancelRecoveryVerification(){
+    return apiPost('auth/recovery/cancel', {});
+}
+
 function rememberStaffAccess(allowed){
     try {
         localStorage.setItem(STAFF_LINK_KEY, allowed ? '1' : '0');

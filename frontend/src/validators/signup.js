@@ -21,5 +21,11 @@ function validateSignupForm(values){
     if(values.password !== values.confirm_password){
         return 'The password and the confirmation do not match.';
     }
+    if(values.recovery_question == "" || values.recovery_answer == ""){
+        return 'Please choose a recovery question and enter its answer.';
+    }
+    if(values.recovery_answer.length > 72){
+        return 'The recovery answer must not be longer than 72 characters.';
+    }
     return "";
 }
