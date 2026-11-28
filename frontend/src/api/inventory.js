@@ -46,6 +46,12 @@ function wasteIngredient(data){
     return apiPost('stock/waste', data);
 }
 
+// record the ingredient's current stock as waste
+function wasteAllIngredient(data){
+    data.all = true;
+    return apiPost('stock/waste', data);
+}
+
 function getIngredientCategories(){
     return apiGet('categories/list', {type: 'ingredient'});
 }

@@ -14,6 +14,7 @@ The system combines recipe costing and inventory management in a single account.
 - Calculate batch cost, cost per serving, and suggested selling price
 - Manage ingredients, categories, reorder levels, and expiry dates
 - Record stock use, restocking, waste, and batch cooking
+- Record all remaining stock for an ingredient as waste; the inventory quantity becomes zero and can be restocked
 - View stock movement history and filter transactions
 - Monitor low-stock, out-of-stock, expired, and near-expiry items
 - Manage staff accounts in business accounts

@@ -1,7 +1,7 @@
 <?php
 // take stock out of one ingredient (type: stock_out for use, waste for spoiled or dropped food)
 // the stock can never go below zero
-function removeStock($conn, $ingredient_id, $qty, $unit, $type, $reference, $user){
+function removeStock($conn, $ingredient_id, $qty, $unit, $type, $reference, $user, $all = false){
 
     $account_id = (int)$user['account_id'];
     $user_id = (int)$user['id'];
@@ -12,9 +12,16 @@ function removeStock($conn, $ingredient_id, $qty, $unit, $type, $reference, $use
             throw new Exception('Ingredient not found.');
         }
 
-        $qty_base = convertToBase($qty, $unit, $ingredient['base_unit']);
-        if($qty_base === null){
-            throw new Exception($ingredient['name'] . ' is kept in ' . unitsFor($ingredient['base_unit']) . '. Please use the same kind of unit.');
+        if($all){
+            $qty_base = round((float)$ingredient['stock_qty'], 3);
+            if($qty_base <= 0){
+                throw new Exception('There is no ' . $ingredient['name'] . ' in stock to record as waste.');
+            }
+        } else {
+            $qty_base = convertToBase($qty, $unit, $ingredient['base_unit']);
+            if($qty_base === null){
+                throw new Exception($ingredient['name'] . ' is kept in ' . unitsFor($ingredient['base_unit']) . '. Please use the same kind of unit.');
+            }
         }
         $qty_base = round($qty_base, 3);
         if($qty_base <= 0){
