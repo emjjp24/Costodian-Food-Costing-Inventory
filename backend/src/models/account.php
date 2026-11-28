@@ -17,4 +17,28 @@ function updateAccountName($conn, $account_id, $name){
     $stmt->bindParam(':id', $account_id);
     $stmt->execute();
 }
+
+// the optional address and tagline of a business (they can head printed reports)
+function updateAccountDetails($conn, $account_id, $address, $tagline){
+    $address = ($address == "") ? null : $address;
+    $tagline = ($tagline == "") ? null : $tagline;
+    $sql = "UPDATE accounts SET address = :address, tagline = :tagline WHERE id = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':address', $address);
+    $stmt->bindParam(':tagline', $tagline);
+    $stmt->bindParam(':id', $account_id);
+    $stmt->execute();
+}
+
+// delete an account with everything in it: recipes, ingredients, stock history, categories and all users
+// recipes go first because a recipe line holds on to its ingredient
+function deleteAccountWithData($conn, $account_id){
+    $stmt = $conn->prepare("DELETE FROM recipes WHERE account_id = :id");
+    $stmt->bindParam(':id', $account_id);
+    $stmt->execute();
+
+    $stmt = $conn->prepare("DELETE FROM accounts WHERE id = :id");
+    $stmt->bindParam(':id', $account_id);
+    $stmt->execute();
+}
 ?>
