@@ -1,0 +1,198 @@
+/* the extra items in the Settings popover (assets/js/settings-extras.js) and their windows */
+
+.settings-menu .menu-item[hidden]{
+    display: none;
+}
+
+.menu-divider{
+    height: 1px;
+    margin: 6px 4px;
+    background: var(--line);
+}
+
+.menu-version{
+    padding: 6px 12px 4px;
+    color: var(--muted);
+    font-size: 11px;
+    text-align: center;
+}
+
+/* "Mute alerts": the bell keeps its list, only the red dot is hidden */
+.alerts-muted .notif-dot{
+    display: none !important;
+}
+
+/* ---------- the windows (Export data, Help) ---------- */
+
+.sx-dialog{
+    width: min(560px, calc(100vw - 32px));
+    max-height: calc(100vh - 48px);
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+    color: var(--text);
+    box-shadow: var(--shadow);
+    font-family: inherit;
+}
+
+.sx-dialog[open]{
+    display: flex;
+    flex-direction: column;
+}
+
+.sx-dialog::backdrop{
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.sx-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--line);
+}
+
+.sx-head h2{
+    margin: 0;
+    font-size: 18px;
+}
+
+.sx-close{
+    border: 0;
+    background: none;
+    color: var(--muted);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.sx-body{
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 16px 22px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.sx-body p{
+    margin: 0 0 12px;
+}
+
+.sx-body h3{
+    margin: 18px 0 6px;
+    font-size: 15px;
+}
+
+.sx-body h3:first-child{
+    margin-top: 0;
+}
+
+.sx-body ul{
+    margin: 0 0 12px;
+    padding-left: 20px;
+}
+
+.sx-body li{
+    margin-bottom: 4px;
+}
+
+.sx-body code{
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: var(--soft);
+    font-size: 13px;
+}
+
+.sx-muted{
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.sx-foot{
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 22px;
+    border-top: 1px solid var(--line);
+}
+
+.sx-btn{
+    padding: 9px 18px;
+    border: 1px solid var(--accent-1);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--accent-text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.sx-btn:hover{
+    background: var(--soft);
+}
+
+.sx-btn:disabled{
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.sx-btn-fill{
+    border-color: transparent;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    color: #3b1d14;
+}
+
+.sx-btn-fill:hover{
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    filter: brightness(1.05);
+}
+
+.sx-export-list{
+    display: grid;
+    gap: 10px;
+    margin: 0 0 12px;
+}
+
+.sx-export-row{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+}
+
+.sx-export-row strong{
+    display: block;
+}
+
+.sx-export-row small{
+    color: var(--muted);
+}
+
+.sx-note{
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--soft);
+    font-size: 13px;
+}
+
+.sx-note-ok{
+    background: var(--ok-bg);
+    color: var(--ok-text);
+}
+
+.sx-note-error{
+    background: var(--error-bg);
+    color: var(--error-text);
+}
+
+.sx-note[hidden]{
+    display: none;
+}

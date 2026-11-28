@@ -51,7 +51,10 @@
 
 /* the form fields (recipes.css only styles them inside its windows, so they are styled again here) */
 .profile-panel input[type="text"],
-.profile-panel input[type="password"]{
+.profile-panel input[type="email"],
+.profile-panel input[type="tel"],
+.profile-panel input[type="password"],
+#delete-dialog input[type="password"]{
     display: block;
     width: 100%;
     margin-top: 4px;
@@ -65,7 +68,8 @@
     font-weight: 400;
 }
 
-.profile-panel input:focus{
+.profile-panel input:focus,
+#delete-dialog input:focus{
     outline: 3px solid var(--ring);
     border-color: var(--accent-1);
 }
@@ -75,7 +79,36 @@
 }
 
 /* .field sets display: block, which beats the hidden attribute:
-   without this the business name box also showed on personal accounts */
-#business-field[hidden]{
+   without this the business fields also showed on personal accounts and for staff */
+.profile-panel .field[hidden]{
     display: none;
+}
+
+.field .optional{
+    color: var(--muted);
+    font-weight: 400;
+}
+
+.profile-head .profile-login{
+    margin-top: 2px;
+    font-size: 13px;
+}
+
+/* the danger zone at the very bottom: kept apart from the normal edits */
+.danger-zone{
+    border: 1px solid var(--error-text);
+}
+
+.danger-zone h2{
+    color: var(--error-text);
+}
+
+.danger-zone .hint{
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+#delete-dialog .confirm-text{
+    margin: 0 0 14px;
+    font-weight: 400;
 }
